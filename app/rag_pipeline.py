@@ -5,9 +5,17 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 from langchain_community.embeddings import OllamaEmbeddings
 
-# Load PDF
-loader = PyPDFLoader("../data/diabetes.pdf")
-docs = loader.load()
+from pathlib import Path
+from langchain_community.document_loaders import PyPDFLoader
+
+docs = []
+
+for pdf in Path("../data").glob("*.pdf"):
+    print(f"Loading: {pdf.name}")
+    loader = PyPDFLoader(str(pdf))
+    docs.extend(loader.load())
+
+print(f"Total Pages: {len(docs)}")
 
 print(f"Pages: {len(docs)}")
 
