@@ -1,70 +1,52 @@
-from langchain_chroma import Chroma
-from langchain_ollama import OllamaEmbeddings
-from langchain_groq import ChatGroq
+from groq import Groq
 
-from langchain_classic.chains.combine_documents import (
-    create_stuff_documents_chain,
-)
-from langchain_classic.chains import create_retrieval_chain
-
-from app.config import (
-    CHROMA_DB_DIR,
-    EMBEDDING_MODEL,
+from config import (
+    GROQ_API_KEY,
     LLM_MODEL,
-    TOP_K,
 )
 
-from app.prompts import QA_PROMPT
+from prompts import SYSTEM_PROMPT
+from vector_store import retriever
 
-# Embedding model
-embedding = OllamaEmbeddings(
-    model=EMBEDDING_MODEL
-)
 
-# Vector Database
-vectorstore = Chroma(
-    persist_directory=str(CHROMA_DB_DIR),
-    embedding_function=embedding,
-)
+# Initialize Groq client
+client = Groq(api_key=GROQ_API_KEY)
 
-# Retriever
-retriever = vectorstore.as_retriever(
-    search_kwargs={"k": TOP_K}
-)
 
-# Groq LLM
-llm = ChatGroq(
-    model=LLM_MODEL,
-    temperature=0,
-)
+def ask_medical_ai(question: str):
+    # Retrieve relevant documents
+    docs = retriever.invoke(question)
 
-# Document Chain
-document_chain = create_stuff_documents_chain(
-    llm,
-    QA_PROMPT,
-)
+    # Combine retrieved text into context
+    context = "\n\n".join(doc.page_content for doc in docs)
 
-# Retrieval Chain
-rag_chain = create_retrieval_chain(
-    retriever,
-    document_chain,
-)
+    # Build prompt
+    prompt = f"""
+{SYSTEM_PROMPT}
 
-print("=" * 60)
-print("Medical AI Assistant")
-print("=" * 60)
+Context:
+{context}
 
-while True:
-    question = input("\nAsk a medical question (type 'exit'): ")
+Question:
+{question}
 
-    if question.lower() == "exit":
-        break
+Answer:
+"""
 
-    response = rag_chain.invoke(
-        {
-            "input": question
-        }
+    # Call Groq LLM
+    response = client.chat.completions.create(
+        model=LLM_MODEL,
+        messages=[
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        temperature=0,
     )
 
-    print("\nAnswer:\n")
-    print(response["answer"])
+    # Return answer and source documents
+    return {
+        "answer": response.choices[0].message.content,
+        "sources": docs
+    }
