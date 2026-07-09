@@ -1,42 +1,33 @@
-print("🔥 RAG PIPELINE STARTED")
-
-from langchain_community.document_loaders import PyPDFLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 from langchain_community.embeddings import OllamaEmbeddings
+from langchain_community.llms import Ollama
 
-from pathlib import Path
-from langchain_community.document_loaders import PyPDFLoader
-
-docs = []
-
-for pdf in Path("../data").glob("*.pdf"):
-    print(f"Loading: {pdf.name}")
-    loader = PyPDFLoader(str(pdf))
-    docs.extend(loader.load())
-
-print(f"Total Pages: {len(docs)}")
-
-print(f"Pages: {len(docs)}")
-
-# Split text
-splitter = RecursiveCharacterTextSplitter(
-    chunk_size=500,
-    chunk_overlap=100
-)
-
-chunks = splitter.split_documents(docs)
-
-print(f"Chunks: {len(chunks)}")
-
-# Embedding model
 embedding = OllamaEmbeddings(model="nomic-embed-text")
 
-# Store in vector DB
-db = Chroma.from_documents(
-    documents=chunks,
-    embedding=embedding,
-    persist_directory="chroma_db"
+db = Chroma(
+    persist_directory="chroma_db",
+    embedding_function=embedding
 )
 
-print("✅ RAG setup complete")
+retriever = db.as_retriever(search_kwargs={"k": 3})
+
+llm = Ollama(model="llama3")
+
+def ask_question(question):
+    docs = retriever.invoke(question)
+
+    context = "\n\n".join([doc.page_content for doc in docs])
+
+    prompt = f"""
+Answer the question using the context below.
+
+Context:
+{context}
+
+Question:
+{question}
+
+Answer:
+"""
+
+    return llm.invoke(prompt)

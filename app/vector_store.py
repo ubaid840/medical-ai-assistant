@@ -1,6 +1,5 @@
 from langchain_chroma import Chroma
-from langchain_community.embeddings import OllamaEmbeddings
-
+from langchain_ollama import OllamaEmbeddings
 from config import (
     EMBEDDING_MODEL,
     CHROMA_DB_DIR,
@@ -19,5 +18,10 @@ vector_db = Chroma(
 
 # Create retriever
 retriever = vector_db.as_retriever(
-    search_kwargs={"k": 3}
+    search_type="mmr",
+    search_kwargs={
+        "k": 3,
+        "fetch_k": 10,
+        "lambda_mult": 0.7
+    }
 )

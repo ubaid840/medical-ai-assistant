@@ -9,23 +9,62 @@ from prompts import SYSTEM_PROMPT
 from vector_store import retriever
 
 
-# Initialize Groq client
+# Initialize Groq Client
 client = Groq(api_key=GROQ_API_KEY)
 
 
 def ask_medical_ai(question: str):
-    # Retrieve relevant documents
+    """
+    Retrieve relevant documents from ChromaDB
+    and generate an answer using the Groq LLM.
+    """
+
+    # Retrieve documents
     docs = retriever.invoke(question)
 
-    # Combine retrieved text into context
-    context = "\n\n".join(doc.page_content for doc in docs)
+    # Debug (optional)
+    print("=" * 60)
+    print("Question:", question)
+    print("Retrieved Documents:", len(docs))
 
-    # Build prompt
+    for i, doc in enumerate(docs, start=1):
+        print(f"\nDocument {i}")
+        print("Source:", doc.metadata.get("source", "Unknown"))
+        print("Page:", doc.metadata.get("page", 0) + 1)
+        print(doc.page_content[:300])
+        print("-" * 60)
+
+    # If nothing is retrieved
+    if not docs:
+        return {
+            "answer": "I couldn't find this information in the uploaded medical documents.",
+            "sources": []
+        }
+
+    # Combine retrieved text
+    context = "\n\n".join(
+        doc.page_content for doc in docs
+    )
+
+    # Prompt
     prompt = f"""
 {SYSTEM_PROMPT}
 
-Context:
+You are a Medical AI Assistant.
+
+Use ONLY the information from the CONTEXT below.
+
+Rules:
+1. Answer only using the retrieved context.
+2. Do NOT use outside knowledge.
+3. If the answer is not present in the context, reply exactly:
+"I couldn't find this information in the uploaded medical documents."
+
+---------------- CONTEXT ----------------
+
 {context}
+
+-----------------------------------------
 
 Question:
 {question}
@@ -33,7 +72,7 @@ Question:
 Answer:
 """
 
-    # Call Groq LLM
+    # Generate response
     response = client.chat.completions.create(
         model=LLM_MODEL,
         messages=[
@@ -43,10 +82,12 @@ Answer:
             }
         ],
         temperature=0,
+        max_tokens=700,
     )
 
-    # Return answer and source documents
+    answer = response.choices[0].message.content.strip()
+
     return {
-        "answer": response.choices[0].message.content,
+        "answer": answer,
         "sources": docs
     }
