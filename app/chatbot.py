@@ -6,10 +6,12 @@ from config import (
 )
 
 from prompts import SYSTEM_PROMPT
-from vector_store import retriever
+from vector_store import get_retriever
 
-
+# -------------------------------------------------
 # Initialize Groq Client
+# -------------------------------------------------
+
 client = Groq(api_key=GROQ_API_KEY)
 
 
@@ -19,10 +21,19 @@ def ask_medical_ai(question: str):
     and generate an answer using the Groq LLM.
     """
 
+    # ---------------------------------------------
+    # Load retriever only when needed
+    # ---------------------------------------------
+
+    retriever = get_retriever()
+
     # Retrieve documents
     docs = retriever.invoke(question)
 
-    # Debug (optional)
+    # ---------------------------------------------
+    # Debug Information
+    # ---------------------------------------------
+
     print("=" * 60)
     print("Question:", question)
     print("Retrieved Documents:", len(docs))
@@ -34,19 +45,28 @@ def ask_medical_ai(question: str):
         print(doc.page_content[:300])
         print("-" * 60)
 
-    # If nothing is retrieved
+    # ---------------------------------------------
+    # No documents found
+    # ---------------------------------------------
+
     if not docs:
         return {
             "answer": "I couldn't find this information in the uploaded medical documents.",
             "sources": []
         }
 
-    # Combine retrieved text
+    # ---------------------------------------------
+    # Build Context
+    # ---------------------------------------------
+
     context = "\n\n".join(
         doc.page_content for doc in docs
     )
 
+    # ---------------------------------------------
     # Prompt
+    # ---------------------------------------------
+
     prompt = f"""
 {SYSTEM_PROMPT}
 
@@ -72,7 +92,10 @@ Question:
 Answer:
 """
 
-    # Generate response
+    # ---------------------------------------------
+    # Generate Response
+    # ---------------------------------------------
+
     response = client.chat.completions.create(
         model=LLM_MODEL,
         messages=[

@@ -1,33 +1,62 @@
-from langchain_chroma import Chroma
-from langchain_community.embeddings import OllamaEmbeddings
-from langchain_community.llms import Ollama
+from groq import Groq
 
-embedding = OllamaEmbeddings(model="nomic-embed-text")
+from config import GROQ_API_KEY, LLM_MODEL
+from prompts import SYSTEM_PROMPT
+from vector_store import retriever
 
-db = Chroma(
-    persist_directory="chroma_db",
-    embedding_function=embedding
-)
+client = Groq(api_key=GROQ_API_KEY)
 
-retriever = db.as_retriever(search_kwargs={"k": 3})
 
-llm = Ollama(model="llama3")
+def ask_question(question: str):
 
-def ask_question(question):
     docs = retriever.invoke(question)
 
-    context = "\n\n".join([doc.page_content for doc in docs])
+    print("=" * 60)
+    print("QUESTION:", question)
+    print("Retrieved:", len(docs))
+
+    context = ""
+
+    for i, doc in enumerate(docs):
+        print(f"\nChunk {i+1}")
+        print(doc.page_content[:300])
+        context += doc.page_content + "\n\n"
+
+    if context.strip() == "":
+        return (
+            "I couldn't find this information in the uploaded medical documents.",
+            docs,
+        )
 
     prompt = f"""
-Answer the question using the context below.
+Use ONLY the medical context below.
 
-Context:
+If the answer is unavailable, say:
+"I couldn't find this information in the uploaded medical documents."
+
+Medical Context:
 {context}
 
 Question:
 {question}
-
-Answer:
 """
 
-    return llm.invoke(prompt)
+    response = client.chat.completions.create(
+        model=LLM_MODEL,
+        temperature=0.2,
+        max_tokens=700,
+        messages=[
+            {
+                "role": "system",
+                "content": SYSTEM_PROMPT,
+            },
+            {
+                "role": "user",
+                "content": prompt,
+            },
+        ],
+    )
+
+    answer = response.choices[0].message.content
+
+    return answer, docs
