@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import uuid
 import streamlit as st
 
 from chatbot import ask_medical_ai
@@ -29,6 +30,9 @@ st.set_page_config(
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
+
+if "session_id" not in st.session_state:
+    st.session_state.session_id = str(uuid.uuid4())
 
 # -------------------------------------------------
 # Sidebar
@@ -61,13 +65,11 @@ with st.sidebar:
             with open(save_path, "wb") as f:
                 f.write(uploaded_file.getbuffer())
 
-            with st.spinner("📚 Indexing PDF... Please wait..."):
+            with st.spinner("📚 Indexing PDF..."):
                 st.cache_resource.clear()
-
                 build_vector_database()
 
             st.success(f"✅ {uploaded_file.name} uploaded successfully!")
-
             st.rerun()
 
         else:
@@ -103,20 +105,13 @@ with st.sidebar:
                     os.remove(pdf)
 
                     with st.spinner("Updating Vector Database..."):
+                        st.cache_resource.clear()
                         build_vector_database()
 
-                    st.success(f"{pdf.name} deleted!")
-
-                    st.cache_resource.clear()
-
-                    build_vector_database()
-                    
                     st.success(f"{pdf.name} deleted successfully!")
-                    
                     st.rerun()
 
     else:
-
         st.warning("No PDF documents found.")
 
     st.divider()
@@ -136,7 +131,7 @@ with st.sidebar:
         st.metric("Top-K", "8")
 
     st.metric("Embedding Model", "nomic-embed-text")
-    st.metric("LLM", "Llama-3.3-70B")
+    st.metric("LLM", "Llama 3.3 70B")
 
     st.divider()
 
@@ -168,17 +163,15 @@ with st.sidebar:
 
     st.divider()
 
-    if st.button(
-        "🗑 Clear Chat",
-        use_container_width=True
-    ):
+    if st.button("🗑 Clear Chat", use_container_width=True):
         st.session_state.messages = []
+        st.session_state.session_id = str(uuid.uuid4())
         st.rerun()
 
     st.divider()
 
-    st.caption("Medical AI Assistant v3.0")
-# -------------------------------------------------
+    st.caption("Medical AI Assistant v3.1")
+    # -------------------------------------------------
 # Main Page
 # -------------------------------------------------
 
@@ -199,7 +192,7 @@ replace professional medical advice.
 )
 
 # -------------------------------------------------
-# Display Chat History
+# Display Previous Chat Messages
 # -------------------------------------------------
 
 for message in st.session_state.messages:
@@ -215,7 +208,8 @@ prompt = st.chat_input("Ask a medical question...")
 
 if prompt:
 
-    # Store user message
+    # Save user message
+
     st.session_state.messages.append(
         {
             "role": "user",
@@ -230,10 +224,13 @@ if prompt:
 
         with st.spinner("🔍 Searching medical documents..."):
 
-            response = ask_medical_ai(prompt)
+            response = ask_medical_ai(
+                question=prompt,
+                session_id=st.session_state.session_id
+            )
 
-            answer = response["answer"]
-            sources = response["sources"]
+        answer = response["answer"]
+        sources = response["sources"]
 
         st.markdown(answer)
 
@@ -243,29 +240,25 @@ if prompt:
 
         if sources:
 
-            with st.expander("📚 Retrieved Source Documents", expanded=False):
+            with st.expander(
+                "📚 Retrieved Source Documents",
+                expanded=False
+            ):
 
                 for i, doc in enumerate(sources, start=1):
 
-                    source = doc.metadata.get(
-                        "source",
-                        "Unknown"
+                    source = Path(
+                        doc.metadata.get("source", "Unknown")
+                    ).name
+
+                    page = (
+                        doc.metadata.get("page", 0) + 1
                     )
 
-                    page = doc.metadata.get(
-                        "page",
-                        0
-                    ) + 1
+                    st.markdown(f"### Source {i}")
 
-                    st.markdown(f"### 📄 Source {i}")
-
-                    st.write(
-                        f"**File:** {Path(source).name}"
-                    )
-
-                    st.write(
-                        f"**Page:** {page}"
-                    )
+                    st.write(f"**File:** {source}")
+                    st.write(f"**Page:** {page}")
 
                     preview = doc.page_content
 
@@ -284,8 +277,7 @@ if prompt:
             "content": answer
         }
     )
-
-# -------------------------------------------------
+    # -------------------------------------------------
 # Footer
 # -------------------------------------------------
 
@@ -321,7 +313,7 @@ with col2:
 
     st.caption("Version")
 
-    st.caption("v3.1")
+    st.caption("v3.2")
 
 st.divider()
 

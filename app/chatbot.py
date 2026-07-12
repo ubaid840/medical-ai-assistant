@@ -7,6 +7,7 @@ from config import (
 
 from prompts import SYSTEM_PROMPT
 from vector_store import get_retriever
+from memory import get_session_history
 
 # -------------------------------------------------
 # Initialize Groq Client
@@ -15,24 +16,24 @@ from vector_store import get_retriever
 client = Groq(api_key=GROQ_API_KEY)
 
 
-def ask_medical_ai(question: str):
+def ask_medical_ai(question: str, session_id: str = "default"):
     """
-    Retrieve relevant documents from ChromaDB
-    and generate an answer using the Groq LLM.
+    Retrieve relevant documents from ChromaDB,
+    use conversation memory,
+    and generate an answer using Groq.
     """
 
-    # ---------------------------------------------
-    # Load retriever only when needed
-    # ---------------------------------------------
+    # -------------------------------------------------
+    # Load Retriever
+    # -------------------------------------------------
 
     retriever = get_retriever()
 
-    # Retrieve documents
-    docs = retriever.invoke(question)
+    # -------------------------------------------------
+    # Retrieve Relevant Documents
+    # -------------------------------------------------
 
-    # ---------------------------------------------
-    # Debug Information
-    # ---------------------------------------------
+    docs = retriever.invoke(question)
 
     print("=" * 60)
     print("Question:", question)
@@ -45,56 +46,66 @@ def ask_medical_ai(question: str):
         print(doc.page_content[:300])
         print("-" * 60)
 
-    # ---------------------------------------------
-    # No documents found
-    # ---------------------------------------------
-
     if not docs:
         return {
             "answer": "I couldn't find this information in the uploaded medical documents.",
             "sources": []
         }
 
-    # ---------------------------------------------
+    # -------------------------------------------------
     # Build Context
-    # ---------------------------------------------
+    # -------------------------------------------------
 
     context = "\n\n".join(
-        doc.page_content for doc in docs
+        doc.page_content
+        for doc in docs
     )
 
-    # ---------------------------------------------
+    # -------------------------------------------------
+    # Conversation Memory
+    # -------------------------------------------------
+
+    history = get_session_history(session_id)
+
+    history_text = ""
+
+    for message in history.messages:
+        role = "User" if message.type == "human" else "Assistant"
+        history_text += f"{role}: {message.content}\n"
+
+    # -------------------------------------------------
     # Prompt
-    # ---------------------------------------------
+    # -------------------------------------------------
 
     prompt = f"""
 {SYSTEM_PROMPT}
 
-You are a Medical AI Assistant.
+You are a professional Medical AI Assistant.
 
-Use ONLY the information from the CONTEXT below.
+Use ONLY the retrieved medical context.
 
-Rules:
-1. Answer only using the retrieved context.
-2. Do NOT use outside knowledge.
-3. If the answer is not present in the context, reply exactly:
-"I couldn't find this information in the uploaded medical documents."
+Conversation History:
+{history_text}
 
----------------- CONTEXT ----------------
-
+Medical Context:
 {context}
 
------------------------------------------
-
-Question:
+Current Question:
 {question}
+
+Rules:
+1. Use ONLY the medical context.
+2. Use conversation history only to understand references like "it", "that disease", etc.
+3. Never invent medical facts.
+4. If the answer is unavailable, reply:
+"I couldn't find this information in the uploaded medical documents."
 
 Answer:
 """
 
-    # ---------------------------------------------
-    # Generate Response
-    # ---------------------------------------------
+    # -------------------------------------------------
+    # LLM Response
+    # -------------------------------------------------
 
     response = client.chat.completions.create(
         model=LLM_MODEL,
@@ -109,6 +120,13 @@ Answer:
     )
 
     answer = response.choices[0].message.content.strip()
+
+    # -------------------------------------------------
+    # Save Conversation
+    # -------------------------------------------------
+
+    history.add_user_message(question)
+    history.add_ai_message(answer)
 
     return {
         "answer": answer,
