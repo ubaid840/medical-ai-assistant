@@ -1,14 +1,61 @@
 from langchain_core.chat_history import InMemoryChatMessageHistory
 
-_store = {}
+
+# Store sessions
+chat_sessions = {}
 
 
 def get_session_history(session_id: str):
     """
-    Returns the chat history for a session.
+    Get or create conversation history
     """
 
-    if session_id not in _store:
-        _store[session_id] = InMemoryChatMessageHistory()
+    if session_id not in chat_sessions:
 
-    return _store[session_id]
+        chat_sessions[session_id] = (
+            InMemoryChatMessageHistory()
+        )
+
+    return chat_sessions[session_id]
+
+
+
+def add_user_message(
+    session_id: str,
+    message: str
+):
+
+    history = get_session_history(
+        session_id
+    )
+
+    history.add_user_message(
+        message
+    )
+
+
+
+def add_ai_message(
+    session_id: str,
+    message: str
+):
+
+    history = get_session_history(
+        session_id
+    )
+
+    history.add_ai_message(
+        message
+    )
+
+
+
+def get_chat_history(
+    session_id: str
+):
+
+    history = get_session_history(
+        session_id
+    )
+
+    return history.messages

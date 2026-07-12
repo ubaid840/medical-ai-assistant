@@ -1,28 +1,61 @@
-import streamlit as st
 from pathlib import Path
+
 from langchain_chroma import Chroma
 from langchain_ollama import OllamaEmbeddings
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-CHROMA_DIR = BASE_DIR / "chroma_db"
+from config import (
+    CHROMA_DB_DIR,
+    EMBEDDING_MODEL
+)
+
+from rag_pipeline import create_chunks
 
 
-@st.cache_resource
+
+def build_vector_database(data_dir):
+
+    print("Loading documents...")
+
+    chunks = create_chunks(data_dir)
+
+    print(f"Chunks created: {len(chunks)}")
+
+
+    embeddings = OllamaEmbeddings(
+        model=EMBEDDING_MODEL
+    )
+
+
+    db = Chroma.from_documents(
+        documents=chunks,
+        embedding=embeddings,
+        persist_directory=str(CHROMA_DB_DIR)
+    )
+
+
+    print("Vector database updated successfully.")
+
+    return db
+
+
+
 def get_retriever():
 
-    embedding = OllamaEmbeddings(
-        model="nomic-embed-text"
+    embeddings = OllamaEmbeddings(
+        model=EMBEDDING_MODEL
     )
+
 
     db = Chroma(
-        persist_directory=str(CHROMA_DIR),
-        embedding_function=embedding,
-    )
-
-    return db.as_retriever(
-        search_type="similarity",
-        search_kwargs={"k": 8},
+        persist_directory=str(CHROMA_DB_DIR),
+        embedding_function=embeddings
     )
 
 
-retriever = get_retriever()
+    retriever = db.as_retriever(
+        search_kwargs={
+            "k":8
+        }
+    )
+
+    return retriever

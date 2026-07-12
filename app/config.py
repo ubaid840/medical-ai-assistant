@@ -2,10 +2,10 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Get the project root directory
+# Project root
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Load .env from the project root
+# Load .env
 load_dotenv(BASE_DIR / ".env")
 
 # API Keys
@@ -19,7 +19,7 @@ EMBEDDING_MODEL = "nomic-embed-text"
 LLM_MODEL = "llama-3.3-70b-versatile"
 
 # Paths
-CHROMA_DB_DIR = BASE_DIR / "app" / "chroma_db"
+CHROMA_DB_DIR = BASE_DIR / "chroma_db"
 DATA_DIR = BASE_DIR / "data"
 
 # Retrieval

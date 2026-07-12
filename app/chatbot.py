@@ -7,21 +7,33 @@ from config import (
 
 from prompts import SYSTEM_PROMPT
 from vector_store import get_retriever
-from memory import get_session_history
 
-# -------------------------------------------------
-# Initialize Groq Client
-# -------------------------------------------------
+from memory import (
+    get_session_history,
+    add_user_message,
+    add_ai_message
+)
 
-client = Groq(api_key=GROQ_API_KEY)
+
+# Initialize Groq
+
+client = Groq(
+    api_key=GROQ_API_KEY
+)
 
 
-def ask_medical_ai(question: str, session_id: str = "default"):
+
+def ask_medical_ai(
+    question: str,
+    session_id: str = "default"
+):
+
     """
-    Retrieve relevant documents from ChromaDB,
+    Retrieve medical documents,
     use conversation memory,
-    and generate an answer using Groq.
+    and generate answer using Groq.
     """
+
 
     # -------------------------------------------------
     # Load Retriever
@@ -29,28 +41,62 @@ def ask_medical_ai(question: str, session_id: str = "default"):
 
     retriever = get_retriever()
 
+
+
     # -------------------------------------------------
-    # Retrieve Relevant Documents
+    # Retrieve Documents
     # -------------------------------------------------
 
-    docs = retriever.invoke(question)
+    docs = retriever.invoke(
+        question
+    )
+
 
     print("=" * 60)
     print("Question:", question)
     print("Retrieved Documents:", len(docs))
 
-    for i, doc in enumerate(docs, start=1):
+
+    for i, doc in enumerate(
+        docs,
+        start=1
+    ):
+
         print(f"\nDocument {i}")
-        print("Source:", doc.metadata.get("source", "Unknown"))
-        print("Page:", doc.metadata.get("page", 0) + 1)
-        print(doc.page_content[:300])
+
+        print(
+            "Source:",
+            doc.metadata.get(
+                "source",
+                "Unknown"
+            )
+        )
+
+        print(
+            "Page:",
+            doc.metadata.get(
+                "page",
+                0
+            ) + 1
+        )
+
+        print(
+            doc.page_content[:300]
+        )
+
         print("-" * 60)
 
+
+
     if not docs:
+
         return {
-            "answer": "I couldn't find this information in the uploaded medical documents.",
-            "sources": []
+            "answer":
+            "I couldn't find this information in the uploaded medical documents.",
+            "sources":[]
         }
+
+
 
     # -------------------------------------------------
     # Build Context
@@ -61,17 +107,34 @@ def ask_medical_ai(question: str, session_id: str = "default"):
         for doc in docs
     )
 
+
+
     # -------------------------------------------------
-    # Conversation Memory
+    # Memory
     # -------------------------------------------------
 
-    history = get_session_history(session_id)
+    history = get_session_history(
+        session_id
+    )
+
 
     history_text = ""
 
+
     for message in history.messages:
-        role = "User" if message.type == "human" else "Assistant"
-        history_text += f"{role}: {message.content}\n"
+
+        role = (
+            "User"
+            if message.type == "human"
+            else "Assistant"
+        )
+
+
+        history_text += (
+            f"{role}: {message.content}\n"
+        )
+
+
 
     # -------------------------------------------------
     # Prompt
@@ -80,55 +143,92 @@ def ask_medical_ai(question: str, session_id: str = "default"):
     prompt = f"""
 {SYSTEM_PROMPT}
 
-You are a professional Medical AI Assistant.
-
-Use ONLY the retrieved medical context.
 
 Conversation History:
+
 {history_text}
 
-Medical Context:
+
+
+Retrieved Medical Context:
+
 {context}
 
+
+
 Current Question:
+
 {question}
 
-Rules:
-1. Use ONLY the medical context.
-2. Use conversation history only to understand references like "it", "that disease", etc.
-3. Never invent medical facts.
-4. If the answer is unavailable, reply:
+
+
+Instructions:
+
+1. Answer only from medical context.
+2. Use conversation history for references.
+3. Explain clearly.
+4. Do not diagnose.
+5. If information is unavailable say:
 "I couldn't find this information in the uploaded medical documents."
+
 
 Answer:
 """
 
+
+
     # -------------------------------------------------
-    # LLM Response
+    # Groq Response
     # -------------------------------------------------
 
     response = client.chat.completions.create(
+
         model=LLM_MODEL,
+
         messages=[
             {
-                "role": "user",
-                "content": prompt
+                "role":"user",
+                "content":prompt
             }
         ],
+
         temperature=0,
-        max_tokens=700,
+
+        max_tokens=700
     )
 
-    answer = response.choices[0].message.content.strip()
+
+    answer = (
+        response
+        .choices[0]
+        .message
+        .content
+        .strip()
+    )
+
+
 
     # -------------------------------------------------
-    # Save Conversation
+    # Save Memory
     # -------------------------------------------------
 
-    history.add_user_message(question)
-    history.add_ai_message(answer)
+    add_user_message(
+        session_id,
+        question
+    )
+
+
+    add_ai_message(
+        session_id,
+        answer
+    )
+
+
 
     return {
-        "answer": answer,
-        "sources": docs
+
+        "answer":answer,
+
+        "sources":docs
+
     }

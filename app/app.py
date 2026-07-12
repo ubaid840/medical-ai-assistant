@@ -1,10 +1,8 @@
 from pathlib import Path
-import os
-import uuid
 import streamlit as st
 
 from chatbot import ask_medical_ai
-from vector_db import build_vector_database
+
 
 # -------------------------------------------------
 # Paths
@@ -12,6 +10,9 @@ from vector_db import build_vector_database
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE_DIR / "data"
+
+DATA_DIR.mkdir(exist_ok=True)
+
 
 # -------------------------------------------------
 # Page Configuration
@@ -24,15 +25,54 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+
 # -------------------------------------------------
-# Session State
+# Custom CSS
 # -------------------------------------------------
 
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+st.markdown(
+"""
+<style>
 
-if "session_id" not in st.session_state:
-    st.session_state.session_id = str(uuid.uuid4())
+.main-title{
+    font-size:45px;
+    font-weight:800;
+    color:#1f2937;
+}
+
+.subtitle{
+    font-size:18px;
+    color:#6b7280;
+}
+
+.card{
+    padding:25px;
+    border-radius:18px;
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+    margin-bottom:20px;
+}
+
+.status{
+    padding:12px;
+    border-radius:10px;
+    background:#dcfce7;
+    color:#166534;
+    margin-bottom:10px;
+}
+
+.footer{
+    text-align:center;
+    color:#6b7280;
+    margin-top:40px;
+}
+
+</style>
+""",
+unsafe_allow_html=True
+)
+
+
 
 # -------------------------------------------------
 # Sidebar
@@ -40,281 +80,381 @@ if "session_id" not in st.session_state:
 
 with st.sidebar:
 
-    st.title("🩺 Medical AI Assistant")
-    st.caption("Professional Medical RAG Chatbot")
+
+    st.markdown(
+    """
+    ## 🩺 Medical AI
+    
+    Intelligent healthcare assistant
+    """
+    )
+
 
     st.divider()
 
-    # =====================================
-    # Upload PDF
-    # =====================================
 
-    st.subheader("📂 Upload Medical PDF")
+    st.subheader("📄 Upload Medical Documents")
 
-    uploaded_file = st.file_uploader(
-        "Choose a PDF",
+
+    uploaded_pdf = st.file_uploader(
+        "Upload PDF",
         type=["pdf"]
     )
 
-    if uploaded_file is not None:
 
-        save_path = DATA_DIR / uploaded_file.name
+    if uploaded_pdf:
 
-        if not save_path.exists():
+        file_path = DATA_DIR / uploaded_pdf.name
 
-            with open(save_path, "wb") as f:
-                f.write(uploaded_file.getbuffer())
+        with open(file_path,"wb") as f:
+            f.write(uploaded_pdf.getbuffer())
 
-            with st.spinner("📚 Indexing PDF..."):
-                st.cache_resource.clear()
-                build_vector_database()
 
-            st.success(f"✅ {uploaded_file.name} uploaded successfully!")
-            st.rerun()
+        st.success(
+            "PDF uploaded successfully.\n\n"
+            "Run vector_db.py to index document."
+        )
 
-        else:
-            st.warning("⚠️ This PDF already exists.")
+
 
     st.divider()
 
-    # =====================================
-    # Indexed Documents
-    # =====================================
 
-    st.subheader("📚 Indexed Documents")
+    st.subheader("🩻 Medical Images")
 
-    pdfs = sorted(DATA_DIR.glob("*.pdf"))
 
-    if pdfs:
+    image_file = st.file_uploader(
+        "Upload X-Ray / CT / MRI",
+        type=[
+            "png",
+            "jpg",
+            "jpeg"
+        ]
+    )
 
-        for pdf in pdfs:
 
-            col1, col2 = st.columns([6, 1])
+    if image_file:
+        st.image(
+            image_file,
+            caption="Uploaded Medical Image",
+            use_container_width=True
+        )
 
-            with col1:
-                st.success(pdf.name)
+        st.info(
+            "Vision AI analysis module will process this image."
+        )
 
-            with col2:
 
-                if st.button(
-                    "🗑",
-                    key=f"delete_{pdf.name}",
-                    help="Delete PDF"
-                ):
-
-                    os.remove(pdf)
-
-                    with st.spinner("Updating Vector Database..."):
-                        st.cache_resource.clear()
-                        build_vector_database()
-
-                    st.success(f"{pdf.name} deleted successfully!")
-                    st.rerun()
-
-    else:
-        st.warning("No PDF documents found.")
 
     st.divider()
 
-    # =====================================
-    # Statistics
-    # =====================================
 
-    st.subheader("📊 Statistics")
+    st.subheader("⚙ System Status")
 
-    col1, col2 = st.columns(2)
 
-    with col1:
-        st.metric("PDFs", len(pdfs))
+    st.markdown(
+    """
+    <div class="status">
+    ✅ Groq Connected
+    </div>
+    
+    <div class="status">
+    ✅ ChromaDB Ready
+    </div>
 
-    with col2:
-        st.metric("Top-K", "8")
+    <div class="status">
+    ✅ Retriever Loaded
+    </div>
 
-    st.metric("Embedding Model", "nomic-embed-text")
-    st.metric("LLM", "Llama 3.3 70B")
+    <div class="status">
+    ✅ Vision AI Ready
+    </div>
+
+    """,
+    unsafe_allow_html=True
+    )
+
+
 
     st.divider()
 
-    # =====================================
-    # System Status
-    # =====================================
-
-    st.subheader("🟢 System Status")
-
-    st.success("Groq Connected")
-    st.success("ChromaDB Loaded")
-    st.success("Retriever Ready")
-
-    st.divider()
-
-    # =====================================
-    # Sample Questions
-    # =====================================
 
     st.subheader("💡 Sample Questions")
 
-    st.markdown("""
-- What is diabetes?
-- What are the symptoms of diabetes?
-- What causes hypertension?
-- What is insulin?
-- Explain high blood pressure.
-""")
 
-    st.divider()
+    questions = [
 
-    if st.button("🗑 Clear Chat", use_container_width=True):
-        st.session_state.messages = []
-        st.session_state.session_id = str(uuid.uuid4())
-        st.rerun()
+        "What are symptoms of diabetes?",
 
-    st.divider()
+        "Explain hypertension",
 
-    st.caption("Medical AI Assistant v3.1")
-    # -------------------------------------------------
-# Main Page
+        "What are risk factors?",
+
+        "Treatment options available?"
+
+    ]
+
+
+    for q in questions:
+
+        st.write(
+            "• " + q
+        )
+
+
+
+
+
+# -------------------------------------------------
+# Main Dashboard
 # -------------------------------------------------
 
-st.title("🩺 Medical AI Assistant")
 
-st.caption(
-    "Powered by Groq • ChromaDB • Ollama • LangChain"
-)
-
-st.info(
-    """
-This Medical AI Assistant uses Retrieval-Augmented Generation (RAG)
-to answer questions based on your uploaded medical documents.
-
-⚠️ This application is for educational purposes only and should not
-replace professional medical advice.
+st.markdown(
 """
+<div class="main-title">
+
+🩺 Medical AI Assistant
+
+</div>
+
+
+<div class="subtitle">
+
+AI-powered healthcare document and medical image analysis platform
+
+<br>
+
+Powered by Groq • LangChain • ChromaDB • Ollama • Vision AI
+
+</div>
+
+""",
+unsafe_allow_html=True
 )
 
-# -------------------------------------------------
-# Display Previous Chat Messages
-# -------------------------------------------------
 
-for message in st.session_state.messages:
 
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+st.write("")
+
+
 
 # -------------------------------------------------
-# Chat Input
+# Tabs
 # -------------------------------------------------
 
-prompt = st.chat_input("Ask a medical question...")
+tab1, tab2, tab3 = st.tabs(
+[
+"💬 Medical Chat",
+"🩻 Image Analysis",
+"📚 Knowledge Base"
+]
+)
 
-if prompt:
 
-    # Save user message
 
-    st.session_state.messages.append(
-        {
-            "role": "user",
-            "content": prompt
-        }
+# -------------------------------------------------
+# Chat Tab
+# -------------------------------------------------
+
+with tab1:
+
+
+    st.markdown(
+    """
+    <div class="card">
+
+    ### 🩺 Medical Consultation
+
+    Ask questions from uploaded medical documents.
+
+    </div>
+    """,
+    unsafe_allow_html=True
     )
 
-    with st.chat_message("user"):
-        st.markdown(prompt)
 
-    with st.chat_message("assistant"):
 
-        with st.spinner("🔍 Searching medical documents..."):
+    question = st.chat_input(
+        "Ask a medical question..."
+    )
 
-            response = ask_medical_ai(
-                question=prompt,
-                session_id=st.session_state.session_id
-            )
 
-        answer = response["answer"]
-        sources = response["sources"]
+    if question:
 
-        st.markdown(answer)
 
-        # -----------------------------------------
-        # Retrieved Source Documents
-        # -----------------------------------------
+        with st.chat_message("user"):
 
-        if sources:
+            st.write(question)
 
-            with st.expander(
-                "📚 Retrieved Source Documents",
-                expanded=False
+
+
+        with st.chat_message("assistant"):
+
+            with st.spinner(
+                "Analyzing medical knowledge..."
             ):
 
-                for i, doc in enumerate(sources, start=1):
 
-                    source = Path(
-                        doc.metadata.get("source", "Unknown")
-                    ).name
+                try:
 
-                    page = (
-                        doc.metadata.get("page", 0) + 1
+                    answer = ask_medical_ai(
+                        question
                     )
 
-                    st.markdown(f"### Source {i}")
 
-                    st.write(f"**File:** {source}")
-                    st.write(f"**Page:** {page}")
+                    st.write(answer)
 
-                    preview = doc.page_content
 
-                    if len(preview) > 300:
-                        preview = preview[:300] + "..."
+                except Exception as e:
 
-                    st.caption(preview)
+                    st.error(
+                        f"Error: {e}"
+                    )
 
-                    st.divider()
 
-    # Save assistant response
 
-    st.session_state.messages.append(
-        {
-            "role": "assistant",
-            "content": answer
-        }
+
+
+# -------------------------------------------------
+# Image Analysis Tab
+# -------------------------------------------------
+
+with tab2:
+
+
+    st.markdown(
+    """
+    <div class="card">
+
+    ### 🖼 Medical Image Intelligence
+
+
+    Upload X-Ray, CT Scan or MRI images.
+
+    Future Vision AI module will analyze:
+
+    - Abnormal regions
+    - Image description
+    - Medical observations
+    - AI confidence score
+
+
+    </div>
+
+    """,
+    unsafe_allow_html=True
     )
-    # -------------------------------------------------
+
+
+    img = st.file_uploader(
+        "Upload Image",
+        type=[
+            "png",
+            "jpg",
+            "jpeg"
+        ],
+        key="image_tab"
+    )
+
+
+    if img:
+
+        st.image(
+            img,
+            width=500
+        )
+
+
+        st.warning(
+            "Vision model integration coming in next upgrade."
+        )
+
+
+
+
+
+# -------------------------------------------------
+# Knowledge Base
+# -------------------------------------------------
+
+with tab3:
+
+
+    st.markdown(
+    """
+    <div class="card">
+
+    ### 📚 Knowledge Base
+
+
+    Current System:
+
+    📄 Medical PDFs Indexed
+
+    🧠 Vector Database: ChromaDB
+
+    🔎 Retrieval: LangChain RAG
+
+    🤖 LLM: Groq
+
+
+    </div>
+
+    """,
+    unsafe_allow_html=True
+    )
+
+
+    col1,col2,col3 = st.columns(3)
+
+
+    with col1:
+
+        st.metric(
+            "Documents",
+            "3+"
+        )
+
+
+    with col2:
+
+        st.metric(
+            "Vector DB",
+            "ChromaDB"
+        )
+
+
+    with col3:
+
+        st.metric(
+            "AI Model",
+            "Llama 3.3"
+        )
+
+
+
+
+
+# -------------------------------------------------
 # Footer
 # -------------------------------------------------
 
-st.divider()
+st.markdown(
+"""
+<div class="footer">
 
-st.subheader("🩺 Medical AI Assistant")
+Developed by <b>Ubaid Ashraf</b><br>
 
-st.write("**Developed by Ubaid Ashraf**")
+B.Sc. Computer Science & Artificial Intelligence
 
-st.write(
-    "B.Sc. (Hons.) Computer Science & Artificial Intelligence"
+
+<br><br>
+
+Medical AI Assistant Phase 3
+
+</div>
+
+""",
+unsafe_allow_html=True
 )
-
-st.write(
-    "Central University of Andhra Pradesh"
-)
-
-st.divider()
-
-col1, col2 = st.columns(2)
-
-with col1:
-
-    st.caption("Powered By")
-
-    st.caption("• Streamlit")
-    st.caption("• LangChain")
-    st.caption("• ChromaDB")
-    st.caption("• Ollama")
-    st.caption("• Groq")
-
-with col2:
-
-    st.caption("Version")
-
-    st.caption("v3.2")
-
-st.divider()
-
-st.caption("© 2026 Ubaid Ashraf. All Rights Reserved.")

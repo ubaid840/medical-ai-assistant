@@ -1,62 +1,44 @@
-from groq import Groq
+from pathlib import Path
 
-from config import GROQ_API_KEY, LLM_MODEL
-from prompts import SYSTEM_PROMPT
-from vector_store import retriever
-
-client = Groq(api_key=GROQ_API_KEY)
+from langchain_community.document_loaders import PyPDFLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 
-def ask_question(question: str):
+def load_documents(data_dir):
 
-    docs = retriever.invoke(question)
+    documents = []
 
-    print("=" * 60)
-    print("QUESTION:", question)
-    print("Retrieved:", len(docs))
+    pdf_files = Path(data_dir).glob("*.pdf")
 
-    context = ""
+    for pdf in pdf_files:
 
-    for i, doc in enumerate(docs):
-        print(f"\nChunk {i+1}")
-        print(doc.page_content[:300])
-        context += doc.page_content + "\n\n"
+        loader = PyPDFLoader(str(pdf))
 
-    if context.strip() == "":
-        return (
-            "I couldn't find this information in the uploaded medical documents.",
-            docs,
-        )
+        docs = loader.load()
 
-    prompt = f"""
-Use ONLY the medical context below.
+        documents.extend(docs)
 
-If the answer is unavailable, say:
-"I couldn't find this information in the uploaded medical documents."
+    return documents
 
-Medical Context:
-{context}
 
-Question:
-{question}
-"""
 
-    response = client.chat.completions.create(
-        model=LLM_MODEL,
-        temperature=0.2,
-        max_tokens=700,
-        messages=[
-            {
-                "role": "system",
-                "content": SYSTEM_PROMPT,
-            },
-            {
-                "role": "user",
-                "content": prompt,
-            },
-        ],
+def split_documents(documents):
+
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=500,
+        chunk_overlap=100
     )
 
-    answer = response.choices[0].message.content
+    chunks = splitter.split_documents(documents)
 
-    return answer, docs
+    return chunks
+
+
+
+def create_chunks(data_dir):
+
+    documents = load_documents(data_dir)
+
+    chunks = split_documents(documents)
+
+    return chunks
