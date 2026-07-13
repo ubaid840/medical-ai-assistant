@@ -1,28 +1,38 @@
+import streamlit as st
 from langchain_core.chat_history import InMemoryChatMessageHistory
 
 
-# Store sessions
-chat_sessions = {}
+# -----------------------------------------
+# Session Memory Storage
+# -----------------------------------------
+
+if "chat_memory" not in st.session_state:
+    st.session_state.chat_memory = {}
 
 
-def get_session_history(session_id: str):
-    """
-    Get or create conversation history
-    """
+# -----------------------------------------
+# Get Chat History
+# -----------------------------------------
 
-    if session_id not in chat_sessions:
+def get_session_history(session_id="default"):
 
-        chat_sessions[session_id] = (
+    if session_id not in st.session_state.chat_memory:
+
+        st.session_state.chat_memory[session_id] = (
             InMemoryChatMessageHistory()
         )
 
-    return chat_sessions[session_id]
+    return st.session_state.chat_memory[session_id]
 
 
+
+# -----------------------------------------
+# Add User Message
+# -----------------------------------------
 
 def add_user_message(
-    session_id: str,
-    message: str
+    session_id,
+    message
 ):
 
     history = get_session_history(
@@ -35,9 +45,13 @@ def add_user_message(
 
 
 
+# -----------------------------------------
+# Add AI Message
+# -----------------------------------------
+
 def add_ai_message(
-    session_id: str,
-    message: str
+    session_id,
+    message
 ):
 
     history = get_session_history(
@@ -50,12 +64,14 @@ def add_ai_message(
 
 
 
-def get_chat_history(
-    session_id: str
+# -----------------------------------------
+# Clear Memory
+# -----------------------------------------
+
+def clear_history(
+    session_id="default"
 ):
 
-    history = get_session_history(
-        session_id
-    )
+    if session_id in st.session_state.chat_memory:
 
-    return history.messages
+        del st.session_state.chat_memory[session_id]
