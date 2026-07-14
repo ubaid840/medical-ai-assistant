@@ -21,7 +21,16 @@ client = Groq(
     api_key=GROQ_API_KEY
 )
 
-
+def transcribe_audio(audio_file):
+    """
+    Transcribe audio using Groq Whisper model.
+    """
+    transcription = client.audio.transcriptions.create(
+      file=("audio.wav", audio_file.read()),
+      model="whisper-large-v3",
+      response_format="text",
+    )
+    return transcription.text
 
 def ask_medical_ai(
     question: str,

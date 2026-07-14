@@ -18,9 +18,21 @@ def get_session_history(session_id="default"):
 
     if session_id not in st.session_state.chat_memory:
 
-        st.session_state.chat_memory[session_id] = (
-            InMemoryChatMessageHistory()
-        )
+        from chat_history import get_messages
+        history = InMemoryChatMessageHistory()
+        
+        # Load from SQLite if exists
+        try:
+            db_messages = get_messages(session_id)
+            for role, msg, ts in db_messages:
+                if role == "user":
+                    history.add_user_message(msg)
+                else:
+                    history.add_ai_message(msg)
+        except Exception:
+            pass
+
+        st.session_state.chat_memory[session_id] = history
 
     return st.session_state.chat_memory[session_id]
 

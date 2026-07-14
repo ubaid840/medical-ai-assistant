@@ -1,13 +1,14 @@
 from pathlib import Path
 import streamlit as st
 
+from database import initialize_database
+from chat_history import create_session
 
 from ui.sidebar import render_sidebar
 from ui.disclaimer import show_disclaimer
 from ui.chat import render_chat
 from ui.analysis import render_analysis
 from ui.knowledge_base import render_knowledge_base
-
 
 
 # =====================================================
@@ -20,6 +21,11 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+# =====================================================
+# INITIALIZE DATABASE
+# =====================================================
+
+initialize_database()
 
 
 
@@ -113,10 +119,18 @@ st.markdown(
 
 
 # =====================================================
+# SESSION MANAGEMENT
+# =====================================================
+
+if "session_id" not in st.session_state:
+    st.session_state.session_id = create_session("New Chat")
+
+
+# =====================================================
 # SIDEBAR
 # =====================================================
 
-render_sidebar()
+render_sidebar(session_id=st.session_state.session_id)
 
 
 
@@ -149,7 +163,7 @@ tab1, tab2, tab3 = st.tabs(
 with tab1:
 
     render_chat(
-        session_id="default"
+        session_id=st.session_state.session_id
     )
 
 
@@ -171,21 +185,4 @@ with tab2:
 with tab3:
 
     render_knowledge_base()
-
-
-
-# =====================================================
-# FOOTER
-# =====================================================
-
-st.markdown(
-    """
-    <div class="footer">
-
-    Designed by Ubaid Ashraf
-
-    </div>
-
-    """,
-    unsafe_allow_html=True
-)
+    

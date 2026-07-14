@@ -7,7 +7,7 @@ from config import (
     TOP_K
 )
 
-from rag_pipeline import create_chunks
+from rag_pipeline import create_chunks, create_chunks_for_file
 
 
 def build_vector_database(data_dir):
@@ -52,3 +52,26 @@ def get_retriever():
     )
 
     return retriever
+
+
+
+def add_document_to_db(pdf_path):
+
+    print(f"Loading document {pdf_path}...")
+
+    chunks = create_chunks_for_file(pdf_path)
+
+    print(f"Chunks created for new file: {len(chunks)}")
+
+    embeddings = OllamaEmbeddings(
+        model=EMBEDDING_MODEL
+    )
+
+    db = Chroma(
+        persist_directory=str(CHROMA_DB_DIR),
+        embedding_function=embeddings
+    )
+
+    db.add_documents(documents=chunks)
+
+    print("Document added to vector database.")

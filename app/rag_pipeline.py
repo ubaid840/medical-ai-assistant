@@ -42,3 +42,15 @@ def create_chunks(data_dir):
     chunks = split_documents(documents)
 
     return chunks
+
+
+
+def create_chunks_for_file(pdf_path):
+
+    loader = PyPDFLoader(str(pdf_path))
+
+    docs = loader.load()
+
+    chunks = split_documents(docs)
+
+    return chunks
