@@ -18,6 +18,10 @@ def build_vector_database(data_dir):
 
     print(f"Chunks created: {len(chunks)}")
 
+    if not chunks:
+        print("No valid documents found to index.")
+        return None
+
     embeddings = OllamaEmbeddings(
         model=EMBEDDING_MODEL
     )
@@ -75,3 +79,34 @@ def add_document_to_db(pdf_path):
     db.add_documents(documents=chunks)
 
     print("Document added to vector database.")
+
+
+def delete_document_from_db(filename):
+    print(f"Deleting document {filename} from vector database...")
+    embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL)
+    db = Chroma(persist_directory=str(CHROMA_DB_DIR), embedding_function=embeddings)
+    
+    try:
+        # Get all documents
+        collection = db._collection
+        
+        # We need to find the IDs of the chunks that belong to this file.
+        # Collection.get() returns dict with 'ids' and 'metadatas'
+        # Then we delete those specific IDs.
+        results = collection.get()
+        ids_to_delete = []
+        
+        if results and "metadatas" in results:
+            for idx, metadata in zip(results["ids"], results["metadatas"]):
+                if metadata and metadata.get("source"):
+                    if filename in metadata.get("source"):
+                        ids_to_delete.append(idx)
+                        
+        if ids_to_delete:
+            collection.delete(ids=ids_to_delete)
+            print(f"Deleted {len(ids_to_delete)} chunks from vector database.")
+        else:
+            print("No matching chunks found to delete.")
+            
+    except Exception as e:
+        print(f"Error deleting from vector database: {e}")

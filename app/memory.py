@@ -85,5 +85,10 @@ def clear_history(
 ):
 
     if session_id in st.session_state.chat_memory:
-
         del st.session_state.chat_memory[session_id]
+        
+    try:
+        from chat_history import clear_messages
+        clear_messages(session_id)
+    except Exception:
+        pass

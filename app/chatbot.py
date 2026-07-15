@@ -97,16 +97,6 @@ def ask_medical_ai(
 
 
 
-    if not docs:
-
-        return {
-            "answer":
-            "I couldn't find this information in the uploaded medical documents.",
-            "sources":[]
-        }
-
-
-
     # -------------------------------------------------
     # Build Context
     # -------------------------------------------------
@@ -145,77 +135,29 @@ def ask_medical_ai(
 
 
 
-    # -------------------------------------------------
-    # Prompt
-    # -------------------------------------------------
-
-    prompt = f"""
-{SYSTEM_PROMPT}
-
-
-Conversation History:
-
-{history_text}
-
-
-
-Retrieved Medical Context:
-
-{context}
-
-
-
-Current Question:
-
-{question}
-
-
-
-Instructions:
-
-1. Answer only from medical context.
-2. Use conversation history for references.
-3. Explain clearly.
-4. Do not diagnose.
-5. If information is unavailable say:
-"I couldn't find this information in the uploaded medical documents."
-
-
-Answer:
-"""
-
-
+    import streamlit as st
+    from patient_profile import format_patient_context
+    from agents import generate_agentic_response
+    
+    active_patient_id = st.session_state.get("active_patient_id")
+    patient_context = format_patient_context(active_patient_id) if active_patient_id else ""
+    privacy_mode = st.session_state.get("privacy_mode", False)
+    chat_language = st.session_state.get("chat_language", "English")
 
     # -------------------------------------------------
-    # Groq Response
+    # Agentic Response
     # -------------------------------------------------
 
-    response = client.chat.completions.create(
-
-        model=LLM_MODEL,
-
-        messages=[
-            {
-                "role":"user",
-                "content":prompt
-            }
-        ],
-
-        temperature=0,
-
-        max_tokens=700
+    answer, route = generate_agentic_response(
+        question=question,
+        context=context,
+        history_text=history_text,
+        patient_context=patient_context,
+        privacy_mode=privacy_mode,
+        language=chat_language
     )
 
-
-    answer = (
-        response
-        .choices[0]
-        .message
-        .content
-        .strip()
-    )
-
-
+    answer = f"*{route.capitalize()} Agent*\n\n" + answer
 
     # -------------------------------------------------
     # Save Memory
@@ -226,18 +168,13 @@ Answer:
         question
     )
 
-
     add_ai_message(
         session_id,
         answer
     )
 
-
-
     return {
-
-        "answer":answer,
-
-        "sources":docs
-
+        "answer": answer,
+        "sources": docs,
+        "route": route
     }

@@ -1,0 +1,146 @@
+/* Modern UI Styles for Medical AI Assistant */
+
+/* General styling */
+.main-title {
+    text-align: center;
+    font-size: 3.8rem;
+    font-weight: 900;
+    margin-top: 20px;
+    background: linear-gradient(135deg, #0ea5e9, #6366f1, #0ea5e9);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientShift 5s ease infinite;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.sub-title {
+    text-align: center;
+    font-size: 1.25rem;
+    color: #64748b;
+    margin-bottom: 40px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.footer {
+    position: fixed;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 14px;
+    color: #94a3b8;
+}
+
+/* Card styling - Glassmorphism */
+.card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    margin-bottom: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] .card {
+    background: rgba(30, 41, 59, 0.7);
+    border-color: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.card h3 {
+    margin-top: 0;
+    color: #0ea5e9;
+    font-weight: 700;
+}
+
+[data-theme="dark"] .card h3 {
+    color: #38bdf8;
+}
+
+/* Chat Message Styling */
+[data-testid="chatAvatarIcon-user"] {
+    background-color: #0ea5e9 !important;
+}
+
+[data-testid="chatAvatarIcon-assistant"] {
+    background: linear-gradient(135deg, #6366f1, #0ea5e9) !important;
+}
+
+.stChatMessage {
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+[data-theme="dark"] .stChatMessage {
+    background: rgba(30, 41, 59, 0.5);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Metric styling */
+div[data-testid="stMetricValue"] {
+    font-size: 2.2rem !important;
+    font-weight: 800 !important;
+    color: #0ea5e9 !important;
+    text-shadow: 0 2px 10px rgba(14, 165, 233, 0.2);
+}
+
+/* Button overrides for a premium look */
+div.stButton > button {
+    background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3);
+}
+
+div.stButton > button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(14, 165, 233, 0.4);
+    background: linear-gradient(135deg, #3b82f6, #0ea5e9);
+    color: white;
+}
+
+div.stButton > button:active {
+    transform: translateY(0);
+}
+
+/* Sidebar overrides */
+[data-testid="stSidebar"] {
+    background: rgba(241, 245, 249, 0.95);
+    backdrop-filter: blur(20px);
+}
+
+[data-theme="dark"] [data-testid="stSidebar"] {
+    background: rgba(15, 23, 42, 0.95);
+}
+
+/* Add custom animations for Streamlit elements */
+.stApp {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

@@ -1,5 +1,8 @@
 import streamlit as st
 from pathlib import Path
+import plotly.express as px
+import pandas as pd
+import numpy as np
 
 from image_ai import analyze_medical_image
 from vector_store import add_document_to_db
@@ -13,37 +16,53 @@ def render_analysis():
     st.markdown(
         """
         <div class="card">
-
-        <h3>🩻 Medical Analysis</h3>
-
-        Upload medical reports or medical images.
-
-        <br><br>
-
-        <b>Supported Files</b>
-
-        <ul>
-            <li>📄 PDF Reports</li>
-            <li>🩻 X-Ray Images</li>
-            <li>🧠 MRI Scans</li>
-            <li>🩺 CT Scans</li>
-            <li>🖼️ JPG / PNG Images</li>
-        </ul>
-
+        <h3>🩻 Medical Analysis & Dashboards</h3>
+        <p>Upload medical reports or medical images below, or view patient analytics.</p>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
+    # ---------------- Interactive Dashboard ---------------- #
+    with st.expander("📈 View Patient Vitals Dashboard", expanded=True):
+        # Generate some mock data for the fabulous dashboard
+        dates = pd.date_range(end=pd.Timestamp.today(), periods=30)
+        heart_rate = np.random.normal(75, 5, size=30)
+        blood_pressure_sys = np.random.normal(120, 8, size=30)
+        
+        df = pd.DataFrame({
+            'Date': dates,
+            'Heart Rate (bpm)': heart_rate,
+            'Systolic BP': blood_pressure_sys
+        })
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            fig1 = px.line(df, x='Date', y='Heart Rate (bpm)', title='Heart Rate Trend', 
+                           color_discrete_sequence=['#ff4b4b'])
+            fig1.update_layout(plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)")
+            st.plotly_chart(fig1, use_container_width=True)
+            
+        with col2:
+            fig2 = px.bar(df, x='Date', y='Systolic BP', title='Blood Pressure (Systolic)',
+                          color_discrete_sequence=['#0ea5e9'])
+            fig2.update_layout(plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)")
+            st.plotly_chart(fig2, use_container_width=True)
+
     uploaded_file = st.file_uploader(
         "Upload Medical Report or Image",
-        type=[
-            "pdf",
-            "png",
-            "jpg",
-            "jpeg",
-        ],
+        type=["pdf", "png", "jpg", "jpeg"],
         key="medical_file",
+        label_visibility="collapsed"
+    )
+
+    st.markdown(
+        """
+        <div style="font-size: 14px; color: gray; margin-bottom: 20px;">
+        <b>Supported Files:</b> 📄 PDF Reports &nbsp;|&nbsp; 🩻 X-Ray Images &nbsp;|&nbsp; 🧠 MRI Scans &nbsp;|&nbsp; 🩺 CT Scans &nbsp;|&nbsp; 🖼️ JPG / PNG Images
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
     if uploaded_file is None:

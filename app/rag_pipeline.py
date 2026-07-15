@@ -1,22 +1,44 @@
 from pathlib import Path
 
-from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import (
+    PyPDFLoader,
+    TextLoader,
+    Docx2txtLoader,
+    CSVLoader
+)
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+
+def get_loader(file_path):
+    ext = Path(file_path).suffix.lower()
+    if ext == '.pdf':
+        return PyPDFLoader(str(file_path))
+    elif ext == '.txt':
+        return TextLoader(str(file_path))
+    elif ext == '.docx':
+        return Docx2txtLoader(str(file_path))
+    elif ext == '.csv':
+        return CSVLoader(str(file_path))
+    else:
+        raise ValueError(f"Unsupported file type: {ext}")
 
 
 def load_documents(data_dir):
 
     documents = []
+    
+    extensions = ['*.pdf', '*.txt', '*.docx', '*.csv']
+    all_files = []
+    for ext in extensions:
+        all_files.extend(Path(data_dir).glob(ext))
 
-    pdf_files = Path(data_dir).glob("*.pdf")
-
-    for pdf in pdf_files:
-
-        loader = PyPDFLoader(str(pdf))
-
-        docs = loader.load()
-
-        documents.extend(docs)
+    for file_path in all_files:
+        try:
+            loader = get_loader(file_path)
+            docs = loader.load()
+            documents.extend(docs)
+        except Exception as e:
+            print(f"Error loading {file_path}: {e}")
 
     return documents
 
@@ -45,12 +67,12 @@ def create_chunks(data_dir):
 
 
 
-def create_chunks_for_file(pdf_path):
+def create_chunks_for_file(file_path):
 
-    loader = PyPDFLoader(str(pdf_path))
+    loader = get_loader(file_path)
 
     docs = loader.load()
 
     chunks = split_documents(docs)
 
-    return chunks
+    return chunks

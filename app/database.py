@@ -57,6 +57,22 @@ def initialize_database():
         )
     """)
 
+    # ----------------------------------------
+    # Patient Profiles
+    # ----------------------------------------
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS patient_profiles (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            age INTEGER,
+            gender TEXT,
+            chronic_conditions TEXT,
+            allergies TEXT,
+            medications TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
     conn.commit()
     conn.close()
 
