@@ -148,16 +148,36 @@ def ask_medical_ai(
     # Agentic Response
     # -------------------------------------------------
 
-    answer, route = generate_agentic_response(
+    answer_generator, route, sentiment = generate_agentic_response(
         question=question,
         context=context,
         history_text=history_text,
         patient_context=patient_context,
+        patient_id=active_patient_id,
         privacy_mode=privacy_mode,
-        language=chat_language
+        language=chat_language,
+        stream=True
     )
 
-    answer = f"*{route.capitalize()} Agent*\n\n" + answer
+    def stream_answer():
+        # Add visual emotional indicator
+        if sentiment == "anxious":
+            yield "💙 *Patient Sentiment: Highly Anxious (Prioritizing Empathetic Care)*\n\n"
+        elif sentiment == "sad":
+            yield "💙 *Patient Sentiment: Sad/Depressed (Prioritizing Empathetic Care)*\n\n"
+            
+        if route == "emergency":
+            yield "🚨 **CRITICAL TRIAGE SUPERVISOR** 🚨\n\n"
+        elif route == "complex":
+            yield f"✨ *Chief Medical Officer (Multi-Agent Synthesis)*\n\n"
+        else:
+            yield f"*{route.capitalize()} Agent*\n\n"
+            
+        if isinstance(answer_generator, str):
+            yield answer_generator
+        else:
+            for chunk in answer_generator:
+                yield chunk
 
     # -------------------------------------------------
     # Save Memory
@@ -167,14 +187,13 @@ def ask_medical_ai(
         session_id,
         question
     )
-
-    add_ai_message(
-        session_id,
-        answer
-    )
+    
+    # We do not add the AI message to memory here because it hasn't been fully generated yet.
+    # The UI layer (chat.py) will consume the generator and then save the final complete message.
 
     return {
-        "answer": answer,
+        "answer_generator": stream_answer(),
         "sources": docs,
-        "route": route
+        "route": route,
+        "sentiment": sentiment
     }

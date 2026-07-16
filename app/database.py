@@ -73,6 +73,51 @@ def initialize_database():
         )
     """)
 
+    # ----------------------------------------
+    # Appointments (Scheduling & Intake)
+    # ----------------------------------------
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS appointments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            patient_id INTEGER,
+            appointment_date TEXT NOT NULL,
+            reason TEXT,
+            status TEXT DEFAULT 'Scheduled',
+            insurance_details TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(patient_id) REFERENCES patient_profiles(id) ON DELETE CASCADE
+        )
+    """)
+
+    # ----------------------------------------
+    # Care Routines (Medications & Follow-ups)
+    # ----------------------------------------
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS care_routines (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            patient_id INTEGER,
+            task_type TEXT NOT NULL,
+            description TEXT NOT NULL,
+            due_date TEXT,
+            status TEXT DEFAULT 'Pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(patient_id) REFERENCES patient_profiles(id) ON DELETE CASCADE
+        )
+    """)
+
+    # ----------------------------------------
+    # HIPAA Audit Logs
+    # ----------------------------------------
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS audit_logs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            action TEXT NOT NULL,
+            patient_id INTEGER,
+            details TEXT,
+            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
     conn.commit()
     conn.close()
 
@@ -83,6 +128,14 @@ def initialize_database():
 
 def database_exists():
     return DATABASE_PATH.exists()
+
+def log_audit(action, patient_id=None, details=""):
+    """Write an event to the HIPAA audit log."""
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO audit_logs (action, patient_id, details) VALUES (?, ?, ?)", (action, patient_id, details))
+    conn.commit()
+    conn.close()
 
 
 # ==========================================================

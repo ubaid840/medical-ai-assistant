@@ -23,8 +23,63 @@ def render_analysis():
         unsafe_allow_html=True,
     )
 
+    # ---------------- CDSS / Risk Prediction ---------------- #
+    with st.expander("⚕️ Clinical Decision Support System (CDSS) - Risk Analytics", expanded=True):
+        st.markdown("Enter patient vitals below to calculate real-time risk scores (e.g., Modified Early Warning Score - MEWS).")
+        
+        col_v1, col_v2, col_v3, col_v4 = st.columns(4)
+        with col_v1:
+            hr = st.number_input("Heart Rate (bpm)", min_value=0, max_value=300, value=75)
+        with col_v2:
+            sys_bp = st.number_input("Systolic BP (mmHg)", min_value=0, max_value=300, value=120)
+        with col_v3:
+            resp_rate = st.number_input("Resp Rate (bpm)", min_value=0, max_value=60, value=16)
+        with col_v4:
+            temp = st.number_input("Temperature (°C)", min_value=20.0, max_value=45.0, value=37.0, step=0.1)
+
+        col_v5, col_v6 = st.columns(2)
+        with col_v5:
+            avpu = st.selectbox("Level of Consciousness (AVPU)", ["Alert", "Voice (Reacts to)", "Pain (Reacts to)", "Unresponsive"])
+            
+        mews_score = 0
+        
+        # Calculate MEWS (Simplified)
+        if hr <= 40 or hr >= 130: mews_score += 3
+        elif hr >= 111: mews_score += 2
+        elif hr <= 50 or hr >= 101: mews_score += 1
+        
+        if sys_bp <= 70: mews_score += 3
+        elif sys_bp <= 80: mews_score += 2
+        elif sys_bp <= 100 or sys_bp >= 200: mews_score += 1
+        
+        if resp_rate <= 8 or resp_rate >= 30: mews_score += 3
+        elif resp_rate >= 21: mews_score += 2
+        elif resp_rate >= 15: mews_score += 1
+        
+        if temp <= 35.0 or temp >= 38.5: mews_score += 2
+        
+        if avpu == "Unresponsive" or avpu == "Pain (Reacts to)": mews_score += 3
+        elif avpu == "Voice (Reacts to)": mews_score += 1
+        
+        st.markdown("### Risk Assessment")
+        if mews_score <= 2:
+            st.success(f"**MEWS Score: {mews_score}** - Low Risk. Continue routine monitoring.")
+        elif mews_score <= 4:
+            st.warning(f"**MEWS Score: {mews_score}** - Medium Risk. Increased observation required.")
+        else:
+            st.error(f"**MEWS Score: {mews_score}** - High Risk. Immediate clinical review required.")
+            
+        # Sepsis SIRS Criteria check (simplified)
+        sirs_criteria = 0
+        if hr > 90: sirs_criteria += 1
+        if resp_rate > 20: sirs_criteria += 1
+        if temp < 36.0 or temp > 38.0: sirs_criteria += 1
+        
+        if sirs_criteria >= 2:
+            st.error(f"⚠️ **SIRS Alert:** Patient meets {sirs_criteria} SIRS criteria. Evaluate for potential infection/sepsis.")
+
     # ---------------- Interactive Dashboard ---------------- #
-    with st.expander("📈 View Patient Vitals Dashboard", expanded=True):
+    with st.expander("📈 View Patient Vitals Dashboard", expanded=False):
         # Generate some mock data for the fabulous dashboard
         dates = pd.date_range(end=pd.Timestamp.today(), periods=30)
         heart_rate = np.random.normal(75, 5, size=30)

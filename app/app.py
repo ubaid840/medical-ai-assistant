@@ -9,6 +9,9 @@ from ui.disclaimer import show_disclaimer
 from ui.chat import render_chat
 from ui.analysis import render_analysis
 from ui.knowledge_base import render_knowledge_base
+from ui.operations import render_operations
+from ui.routines import render_routines
+from ui.audit import render_audit_dashboard
 
 
 # =====================================================
@@ -111,6 +114,8 @@ render_sidebar(session_id=st.session_state.session_id)
 # DISCLAIMER
 # =====================================================
 
+st.divider()
+
 show_disclaimer()
 
 
@@ -119,11 +124,16 @@ show_disclaimer()
 # TABS
 # =====================================================
 
-tab1, tab2, tab3 = st.tabs(
+st.divider()
+
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
     [
-        "💬 Medical Chat",
-        "📊 Health Analysis",
-        "📚 Knowledge Base"
+        "💬 Chat",
+        "🔬 Analysis",
+        "🧠 Knowledge",
+        "📅 Intake",
+        "💊 Routines",
+        "🔒 Audit"
     ]
 )
 
@@ -158,3 +168,30 @@ with tab2:
 with tab3:
 
     render_knowledge_base()
+
+
+# =====================================================
+# OPERATIONS & INTAKE
+# =====================================================
+
+with tab4:
+
+    render_operations()
+
+
+# =====================================================
+# CARE ROUTINES
+# =====================================================
+
+with tab5:
+
+    render_routines()
+
+
+# =====================================================
+# AUDIT & SECURITY
+# =====================================================
+
+with tab6:
+
+    render_audit_dashboard()
