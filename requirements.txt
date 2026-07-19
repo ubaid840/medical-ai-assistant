@@ -17,3 +17,6 @@ docx2txt
 pydantic
 streamlit-lottie
 streamlit-echarts
+langgraph
+duckduckgo-search
+pysqlite3-binary
