@@ -15,3 +15,5 @@ fpdf
 pypdf
 docx2txt
 pydantic
+streamlit-lottie
+streamlit-echarts
