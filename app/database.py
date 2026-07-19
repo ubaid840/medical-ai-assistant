@@ -106,6 +106,23 @@ def initialize_database():
     """)
 
     # ----------------------------------------
+    # Patient Vitals
+    # ----------------------------------------
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS patient_vitals (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            patient_id INTEGER,
+            heart_rate INTEGER,
+            systolic_bp INTEGER,
+            diastolic_bp INTEGER,
+            respiratory_rate INTEGER,
+            temperature REAL,
+            recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(patient_id) REFERENCES patient_profiles(id) ON DELETE CASCADE
+        )
+    """)
+
+    # ----------------------------------------
     # HIPAA Audit Logs
     # ----------------------------------------
     cursor.execute("""

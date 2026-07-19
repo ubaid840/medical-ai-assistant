@@ -5,6 +5,7 @@ from config import GROQ_API_KEY, LLM_MODEL
 from prompts import SYSTEM_PROMPT
 import requests
 import json
+from privacy_manager import PrivacyManager
 
 # Setup logging
 logging.basicConfig(
@@ -180,6 +181,7 @@ class AgentState(TypedDict):
     privacy_mode: bool
     language: str
     stream: bool
+    is_emergency: bool
     
     # Internal graph state
     route: str
@@ -200,7 +202,8 @@ Route Options:
 4. "scheduler" - for booking appointments, taking insurance info, or patient intake.
 5. "care_coordinator" - for creating medication reminders or post-op follow-up routines.
 6. "complex" - if the question involves BOTH significant symptoms AND medication interactions, requiring a multi-agent debate.
-7. "general" - for all other general medical or administrative questions.
+7. "calculator" - for requests to compute medical scores or values like BMI, eGFR, MAP, etc.
+8. "general" - for all other general medical or administrative questions.
 
 Emergency Detection:
 If the user mentions severe chest pain, inability to breathe, heavy bleeding, or suicide, output route "emergency".
@@ -273,7 +276,7 @@ def router_node(state: AgentState):
         route = "emergency"
         sentiment = "anxious"
     
-    valid_routes = ["pharmacology", "diagnostician", "researcher", "scheduler", "care_coordinator", "complex", "general", "emergency"]
+    valid_routes = ["pharmacology", "diagnostician", "researcher", "scheduler", "care_coordinator", "complex", "calculator", "general", "emergency"]
     if not any(r in route for r in valid_routes):
         route = "general"
     else:
@@ -283,6 +286,54 @@ def router_node(state: AgentState):
                 break
                 
     return {"route": route, "sentiment": sentiment}
+
+def calculator_node(state: AgentState):
+    logger.info("Executing Calculator Node")
+    from medical_calculator import calculate_bmi, calculate_map, calculate_egfr
+    
+    # We ask the LLM to extract the parameters for the calculator in JSON format
+    extract_prompt = f"""You are a medical calculator parameter extractor.
+The user wants to calculate a medical score. Extract the parameters from their question.
+Return ONLY valid JSON matching one of these structures based on what they want to calculate:
+{{ "calc": "bmi", "weight_kg": float, "height_m": float }}
+{{ "calc": "map", "systolic": float, "diastolic": float }}
+{{ "calc": "egfr", "creatinine": float, "age": int, "is_female": bool, "is_black": bool }}
+
+If you cannot extract the parameters, return {{ "error": "Missing parameters" }}.
+Question: {state['question']}
+"""
+    json_result = call_llm(extract_prompt, temperature=0, max_tokens=150, privacy_mode=state["privacy_mode"], stream=False)
+    
+    try:
+        import json
+        json_str = str(json_result).strip()
+        if json_str.startswith("```json"): json_str = json_str[7:-3]
+        elif json_str.startswith("```"): json_str = json_str[3:-3]
+        
+        params = json.loads(json_str)
+        if "error" in params:
+            calc_result = "I need more parameters to perform this calculation. Please provide the required values."
+        elif params.get("calc") == "bmi":
+            calc_result = calculate_bmi(params.get("weight_kg", 0), params.get("height_m", 0))
+        elif params.get("calc") == "map":
+            calc_result = calculate_map(params.get("systolic", 0), params.get("diastolic", 0))
+        elif params.get("calc") == "egfr":
+            calc_result = calculate_egfr(params.get("creatinine", 1.0), params.get("age", 50), params.get("is_female", False), params.get("is_black", False))
+        else:
+            calc_result = "Unsupported calculation."
+    except Exception as e:
+        calc_result = f"Failed to parse parameters for calculation. {e}"
+
+    prompt = f"""You are a Medical Calculator Assistant.
+The user asked to calculate a medical score.
+Calculation Result: {calc_result}
+
+Respond to the user naturally, providing the calculated result and a brief explanation of what it means.
+
+Current Question:
+{state['question']}
+"""
+    return {"final_prompt": prompt}
 
 def researcher_node(state: AgentState):
     logger.info("Executing Researcher Node")
@@ -386,16 +437,20 @@ def synthesizer_node(state: AgentState):
     return {"final_prompt": prompt}
 
 def emergency_node(state: AgentState):
-    logger.info("Executing Emergency Node")
-    msg = "🚨 **EMERGENCY DETECTED** 🚨\n\nYour message indicates a potential medical emergency. I am an AI and cannot provide emergency medical care.\n\n**Please call 911 or visit your nearest emergency room immediately.**\n\n*Chat paused. Handing off to human triage nurse...*"
-    return {"final_generator": msg}
+    logger.info("Executing Emergency Node - HARD ESCALATION TRIGGERED")
+    msg = "🚨 **EMERGENCY DETECTED** 🚨\n\nYour symptoms (e.g. severe chest pain, breathing difficulty, or heavy bleeding) indicate a potential medical emergency. I am an AI and cannot provide emergency medical care.\n\n**Please call 911 or visit your nearest emergency room immediately.**\n\n*System Locked. Triage nurse alerted.*"
+    return {"final_generator": msg, "is_emergency": True}
 
 def generation_node(state: AgentState):
     logger.info("Executing Final Generation Node")
     final_prompt = state["final_prompt"]
     
-    if state.get("sentiment") in ["anxious", "sad"]:
-        final_prompt += "\n\nCRITICAL INSTRUCTION: The patient's sentiment is detected as high anxiety or sadness. You MUST respond with an extremely empathetic, calming, and supportive bedside manner."
+    # Emotion AI & Empathy Modeling
+    sentiment = state.get("sentiment", "neutral")
+    if sentiment in ["anxious", "sad"]:
+        final_prompt += "\n\nCRITICAL INSTRUCTION: The patient's sentiment is detected as HIGH ANXIETY/SADNESS. You MUST employ Digital CBT (Cognitive Behavioral Therapy) techniques. Start your response with profound, judgment-free empathy. Reassure the patient and use a calming, supportive tone before giving any medical information."
+    elif sentiment == "angry":
+        final_prompt += "\n\nCRITICAL INSTRUCTION: The patient's sentiment is ANGRY. Use de-escalation techniques. Be extremely polite, concise, and professional. Acknowledge their frustration immediately."
         
     if state["language"].lower() != "english":
         final_prompt += f"\\n\\nCRITICAL INSTRUCTION: You must strictly translate and provide your final response entirely in {state['language']}. Keep the same formatting."
@@ -418,6 +473,8 @@ def route_logic(state: AgentState):
         return "scheduler"
     elif route == "care_coordinator":
         return "care_coordinator"
+    elif route == "calculator":
+        return "calculator"
     elif route == "complex":
         return ["pharmacology", "diagnostician"] # Parallel execution!
     else:
@@ -432,6 +489,7 @@ builder.add_node("diagnostician", diagnostician_node)
 builder.add_node("researcher", researcher_node)
 builder.add_node("scheduler", scheduler_node)
 builder.add_node("care_coordinator", care_coordinator_node)
+builder.add_node("calculator", calculator_node)
 builder.add_node("general", general_node)
 builder.add_node("synthesizer", synthesizer_node)
 builder.add_node("generator", generation_node)
@@ -443,13 +501,14 @@ builder.add_edge(START, "router")
 builder.add_conditional_edges(
     "router",
     route_logic,
-    ["pharmacology", "diagnostician", "researcher", "scheduler", "care_coordinator", "general", "emergency"]
+    ["pharmacology", "diagnostician", "researcher", "scheduler", "care_coordinator", "calculator", "general", "emergency"]
 )
 
 # Edges from specific agents
 builder.add_edge("researcher", "generator")
 builder.add_edge("scheduler", "generator")
 builder.add_edge("care_coordinator", "generator")
+builder.add_edge("calculator", "generator")
 builder.add_edge("general", "generator")
 
 # For pharma and diag, if they were part of complex, they go to synthesizer. Else generator.
@@ -468,16 +527,22 @@ builder.add_edge("emergency", END)
 medical_graph = builder.compile()
 
 
-def generate_agentic_response(question: str, context: str, history_text: str, patient_context: str = "", patient_id: Optional[int] = None, privacy_mode: bool = False, language: str = "English", stream: bool = False) -> Tuple[Union[str, Generator[str, None, None]], str]:
+def generate_agentic_response(question: str, context: str, history_text: str, patient_context: str = "", patient_id: Optional[int] = None, privacy_mode: bool = False, language: str = "English", stream: bool = False) -> Tuple[Union[str, Generator[str, None, None]], str, str, bool]:
+    
+    # Zero-Trust Security: Mask PHI before processing
+    safe_question = PrivacyManager.mask_phi(question)
+    safe_history = PrivacyManager.mask_phi(history_text)
+    
     initial_state = AgentState(
-        question=question,
+        question=safe_question,
         context=context,
-        history_text=history_text,
+        history_text=safe_history,
         patient_context=patient_context,
         patient_id=patient_id,
         privacy_mode=privacy_mode,
         language=language,
         stream=stream,
+        is_emergency=False,
         route="general",
         pharmacology_response="",
         diagnostician_response="",
@@ -488,7 +553,7 @@ def generate_agentic_response(question: str, context: str, history_text: str, pa
     # Run graph synchronously
     result_state = medical_graph.invoke(initial_state)
     
-    return result_state["final_generator"], result_state["route"], result_state.get("sentiment", "neutral")
+    return result_state["final_generator"], result_state["route"], result_state.get("sentiment", "neutral"), result_state.get("is_emergency", False)
 
 def generate_soap_note(history_text: str, patient_context: str = "", privacy_mode: bool = False) -> str:
     soap_prompt = f"""You are a medical scribe. Based on the following patient conversation, generate a professional clinical SOAP note.

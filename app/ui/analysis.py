@@ -6,6 +6,7 @@ import numpy as np
 
 from image_ai import analyze_medical_image
 from vector_store import add_document_to_db
+from database import get_connection
 
 
 def render_analysis():
@@ -75,34 +76,48 @@ def render_analysis():
         if resp_rate > 20: sirs_criteria += 1
         if temp < 36.0 or temp > 38.0: sirs_criteria += 1
         
-        if sirs_criteria >= 2:
-            st.error(f"⚠️ **SIRS Alert:** Patient meets {sirs_criteria} SIRS criteria. Evaluate for potential infection/sepsis.")
+        if st.button("Save Vitals for Active Patient"):
+            active_patient_id = st.session_state.get("active_patient_id")
+            if not active_patient_id:
+                st.error("Please select a patient from the sidebar first.")
+            else:
+                conn = get_connection()
+                cursor = conn.cursor()
+                cursor.execute("""
+                    INSERT INTO patient_vitals (patient_id, heart_rate, systolic_bp, diastolic_bp, respiratory_rate, temperature)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """, (active_patient_id, hr, sys_bp, 80, resp_rate, temp))
+                conn.commit()
+                conn.close()
+                st.success("Vitals saved to patient history.")
 
     # ---------------- Interactive Dashboard ---------------- #
     with st.expander("📈 View Patient Vitals Dashboard", expanded=False):
-        # Generate some mock data for the fabulous dashboard
-        dates = pd.date_range(end=pd.Timestamp.today(), periods=30)
-        heart_rate = np.random.normal(75, 5, size=30)
-        blood_pressure_sys = np.random.normal(120, 8, size=30)
+        active_patient_id = st.session_state.get("active_patient_id")
         
-        df = pd.DataFrame({
-            'Date': dates,
-            'Heart Rate (bpm)': heart_rate,
-            'Systolic BP': blood_pressure_sys
-        })
-        
-        col1, col2 = st.columns(2)
-        with col1:
-            fig1 = px.line(df, x='Date', y='Heart Rate (bpm)', title='Heart Rate Trend', 
-                           color_discrete_sequence=['#ff4b4b'])
-            fig1.update_layout(plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)")
-            st.plotly_chart(fig1, use_container_width=True)
+        if not active_patient_id:
+            st.warning("Please select a patient from the sidebar to view their dashboard.")
+        else:
+            conn = get_connection()
+            df = pd.read_sql_query("SELECT recorded_at as Date, heart_rate as 'Heart Rate (bpm)', systolic_bp as 'Systolic BP' FROM patient_vitals WHERE patient_id = ? ORDER BY recorded_at ASC", conn, params=(active_patient_id,))
+            conn.close()
             
-        with col2:
-            fig2 = px.bar(df, x='Date', y='Systolic BP', title='Blood Pressure (Systolic)',
-                          color_discrete_sequence=['#0ea5e9'])
-            fig2.update_layout(plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)")
-            st.plotly_chart(fig2, use_container_width=True)
+            if df.empty:
+                st.info("No vitals data found for this patient. Add some above!")
+            else:
+                df['Date'] = pd.to_datetime(df['Date'])
+                col1, col2 = st.columns(2)
+                with col1:
+                    fig1 = px.line(df, x='Date', y='Heart Rate (bpm)', title='Heart Rate Trend', 
+                                   color_discrete_sequence=['#ff4b4b'], markers=True)
+                    fig1.update_layout(plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)")
+                    st.plotly_chart(fig1, use_container_width=True)
+                    
+                with col2:
+                    fig2 = px.bar(df, x='Date', y='Systolic BP', title='Blood Pressure (Systolic)',
+                                  color_discrete_sequence=['#0ea5e9'])
+                    fig2.update_layout(plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)")
+                    st.plotly_chart(fig2, use_container_width=True)
 
     uploaded_file = st.file_uploader(
         "Upload Medical Report or Image",

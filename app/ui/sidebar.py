@@ -27,20 +27,42 @@ def render_sidebar(session_id=None):
 
     st.sidebar.markdown(
         """
-        <div style="text-align: center; margin-top: 5px; margin-bottom: 25px; padding: 20px 10px; background: white; border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); position: relative; overflow: hidden;">
-            <div style="position: absolute; top: -20px; left: -20px; width: 80px; height: 80px; background: radial-gradient(circle, rgba(14,165,233,0.1) 0%, rgba(255,255,255,0) 70%); border-radius: 50%;"></div>
-            <div style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #0ea5e9, #6366f1); box-shadow: 0 8px 20px rgba(14, 165, 233, 0.35); margin-bottom: 15px;">
-                <span style="font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); color: white;">🧬</span>
-            </div>
-            <h2 style="font-size: 1.6rem; font-weight: 900; margin: 0; color: #0f172a; letter-spacing: -0.5px; line-height: 1.2;">
-                Medical AI
-            </h2>
-            <div style="margin-top: 8px; display: inline-block; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 4px 12px; border-radius: 20px;">
-                <p style="font-size: 0.75rem; font-weight: 700; color: #16a34a; text-transform: uppercase; letter-spacing: 1px; margin: 0;">
-                    Clinical Assistant
-                </p>
-            </div>
-        </div>
+<style>
+.ekg-line-sidebar {
+    stroke-dasharray: 2000;
+    stroke-dashoffset: 2000;
+    animation: draw-ekg-sidebar 6s infinite linear;
+}
+@keyframes draw-ekg-sidebar {
+    0% { stroke-dashoffset: 2000; }
+    50% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -2000; }
+}
+</style>
+<div style="text-align: center; margin-top: 5px; margin-bottom: 25px; padding: 20px 10px; background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%); border-radius: 20px; border: 2px solid #ef4444; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); position: relative; overflow: hidden;">
+<!-- Animated EKG Background -->
+<svg viewBox="0 0 1000 200" preserveAspectRatio="none" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.15; z-index: 0; pointer-events: none;">
+<path class="ekg-line-sidebar" d="M0,100 L250,100 L270,70 L290,140 L320,30 L350,170 L370,80 L390,100 L700,100 L720,70 L740,140 L770,30 L800,170 L820,80 L840,100 L1000,100" fill="none" stroke="#0ea5e9" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+<!-- Medical Plus Symbols -->
+<div style="position: absolute; top: 15px; left: 15px; color: #991b1b; font-size: 2rem; font-weight: bold; line-height: 1; opacity: 0.6; z-index: 1;">+</div>
+<div style="position: absolute; top: 15px; right: 15px; color: #991b1b; font-size: 2rem; font-weight: bold; line-height: 1; opacity: 0.6; z-index: 1;">+</div>
+
+<div style="position: relative; z-index: 1;">
+<div style="position: absolute; top: -20px; left: -20px; width: 80px; height: 80px; background: radial-gradient(circle, rgba(14,165,233,0.1) 0%, rgba(255,255,255,0) 70%); border-radius: 50%;"></div>
+<div style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #0ea5e9, #6366f1); box-shadow: 0 8px 20px rgba(14, 165, 233, 0.35); margin-bottom: 15px;">
+<span style="font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); color: white;">🩺</span>
+</div>
+<h2 style="font-size: 1.6rem; font-weight: 900; margin: 0; color: #0f172a; letter-spacing: -0.5px; line-height: 1.2;">
+Medical AI
+</h2>
+<div style="margin-top: 8px; display: inline-block; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 4px 12px; border-radius: 20px;">
+<p style="font-size: 0.75rem; font-weight: 700; color: #16a34a; text-transform: uppercase; letter-spacing: 1px; margin: 0;">
+Clinical Assistant
+</p>
+</div>
+</div>
+</div>
         """,
         unsafe_allow_html=True
     )

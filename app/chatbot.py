@@ -148,7 +148,7 @@ def ask_medical_ai(
     # Agentic Response
     # -------------------------------------------------
 
-    answer_generator, route, sentiment = generate_agentic_response(
+    answer_generator, route, sentiment, is_emergency = generate_agentic_response(
         question=question,
         context=context,
         history_text=history_text,
@@ -195,5 +195,6 @@ def ask_medical_ai(
         "answer_generator": stream_answer(),
         "sources": docs,
         "route": route,
-        "sentiment": sentiment
+        "sentiment": sentiment,
+        "is_emergency": is_emergency
     }

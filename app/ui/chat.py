@@ -13,24 +13,31 @@ def render_chat(session_id: str):
 
     st.markdown(
         """
-        <div class="card">
+<div style="
+background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+border-radius: 20px;
+padding: 35px 30px;
+color: white;
+box-shadow: 0 20px 40px -10px rgba(99, 102, 241, 0.4);
+margin-bottom: 25px;
+position: relative;
+overflow: hidden;
+border: 1px solid rgba(255,255,255,0.2);
+">
+<!-- Abstract background circles for depth -->
+<div style="position: absolute; top: -50px; right: -50px; width: 250px; height: 250px; background: rgba(255,255,255,0.1); border-radius: 50%; filter: blur(30px); pointer-events: none;"></div>
+<div style="position: absolute; bottom: -80px; left: 10%; width: 200px; height: 200px; background: rgba(255,255,255,0.15); border-radius: 50%; filter: blur(25px); pointer-events: none;"></div>
 
-        <h3 style="display: flex; align-items: center; gap: 10px;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="url(#blue-gradient)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <defs>
-                    <linearGradient id="blue-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#0ea5e9" />
-                        <stop offset="100%" stop-color="#3b82f6" />
-                    </linearGradient>
-                </defs>
-                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-            </svg>
-            Medical Consultation
-        </h3>
-
-        <p style="color: #64748b; font-size: 0.95rem;">Ask questions from uploaded medical documents.</p>
-
-        </div>
+<div style="display: flex; align-items: center; gap: 25px; position: relative; z-index: 1;">
+<div style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); width: 80px; height: 80px; border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.4);">
+<span style="font-size: 40px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));">💬</span>
+</div>
+<div>
+<h2 style="margin: 0; font-size: 2.2rem; font-weight: 900; letter-spacing: -0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.15);">AI Clinical Consultation</h2>
+<p style="margin: 8px 0 0 0; font-size: 1.1rem; opacity: 0.95; font-weight: 500; letter-spacing: 0.2px;">Secure, intelligent analysis of your medical history and symptoms.</p>
+</div>
+</div>
+</div>
         """,
         unsafe_allow_html=True,
     )
@@ -196,10 +203,22 @@ def render_chat(session_id: str):
             )
             
             route = response.get("route", "general")
-            if route == "emergency":
+            is_emergency = response.get("is_emergency", False)
+            
+            if is_emergency:
                 status.write("🚨 **EMERGENCY DETECTED. HANDING OFF.** 🚨")
                 log_audit("Emergency Escalation", active_patient_id, "AI detected a potential medical emergency and triggered triage handoff.")
-                st.error("Emergency keywords detected. Chat has been paused.")
+                st.markdown(
+                    """
+                    <div style="background-color: #fef2f2; border: 2px solid #ef4444; border-radius: 12px; padding: 25px; margin-top: 15px; text-align: center; box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);">
+                        <h1 style="color: #ef4444; margin: 0 0 10px 0; font-size: 2.5rem;">🚨 EMERGENCY DETECTED 🚨</h1>
+                        <p style="color: #991b1b; font-size: 1.2rem; font-weight: bold; margin: 0;">This system is not for emergency use. Please call 911 immediately.</p>
+                        <hr style="border-color: #fca5a5; margin: 15px 0;">
+                        <p style="color: #7f1d1d; margin: 0;">The chat interface has been locked and human triage has been notified.</p>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
             elif route == "complex":
                 status.write("✅ Routed to Pharmacology & Diagnostician Agents for Debate.")
             else:
