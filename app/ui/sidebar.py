@@ -20,7 +20,7 @@ from config import (
 )
 
 from memory import clear_history, get_session_history
-from chat_history import get_all_sessions, create_session, delete_session, cleanup_empty_sessions
+from chat_history import get_all_sessions, create_session, delete_session
 
 
 def render_sidebar(session_id=None):
@@ -93,8 +93,8 @@ Clinical Assistant
         st.session_state.active_patient_id = selected_patient
         st.rerun()
 
-    if st.sidebar.button("🗑️ Delete Profile", use_container_width=True, disabled=(selected_patient is None)):
-        if selected_patient is not None:
+    if selected_patient is not None:
+        if st.sidebar.button("🗑️ Delete Profile", use_container_width=True):
             delete_patient(selected_patient)
             st.session_state.active_patient_id = None
             st.toast("Profile deleted.", icon="🗑️")
@@ -119,7 +119,62 @@ Clinical Assistant
 
     st.sidebar.divider()
 
+    # ==========================
+    # Chat Sessions
+    # ==========================
+    
+    st.sidebar.subheader("💬 Chat Sessions")
+    
+    sessions = get_all_sessions()
+    
+    col1, col2 = st.sidebar.columns(2)
+    
+    with col1:
+        if st.button("➕ New Chat", use_container_width=True, type="primary"):
+            st.session_state.session_id = create_session("New Chat")
+            st.session_state.chat_memory = {}
+            st.rerun()
+            
+    with col2:
+        if sessions:
+            if st.button("🗑️ Delete", use_container_width=True, type="primary"):
+                delete_session(st.session_state.session_id)
+                if st.session_state.session_id in st.session_state.chat_memory:
+                    del st.session_state.chat_memory[st.session_state.session_id]
+                st.session_state.session_id = create_session("New Chat")
+                st.rerun()
+        else:
+            st.button("🗑️ Delete", use_container_width=True, type="primary", disabled=True)
+            
+    if sessions:
+        session_opts = {s[0]: f"💬 {s[1]} ({s[2][:10]})" for s in sessions} 
+        
+        current_id = st.session_state.session_id
+        session_ids = list(session_opts.keys())
+        current_index = session_ids.index(current_id) if current_id in session_ids else 0
 
+        selected_id = st.sidebar.selectbox(
+            "Select Past Chat",
+            options=session_ids,
+            format_func=lambda x: session_opts[x],
+            index=current_index,
+            label_visibility="collapsed"
+        )
+
+        if selected_id != st.session_state.session_id:
+            st.session_state.session_id = selected_id
+            st.rerun()
+    else:
+        st.sidebar.markdown(
+            """
+            <div style="background: rgba(241, 245, 249, 0.5); padding: 10px; border-radius: 8px; text-align: center; color: #64748b; font-size: 0.85rem; border: 1px dashed #cbd5e1; margin-top: 5px;">
+                No past chats available.
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
+
+    st.sidebar.divider()
 
     st.sidebar.subheader("📄 Upload Medical Documents")
 

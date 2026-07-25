@@ -50,32 +50,6 @@ def get_all_sessions():
     return sessions
 
 
-def cleanup_empty_sessions(active_session_id=None):
-    """Delete any chat session that has no messages, except the currently active one."""
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    if active_session_id:
-        cursor.execute(
-            """
-            DELETE FROM chat_sessions
-            WHERE session_id NOT IN (SELECT DISTINCT session_id FROM chat_history)
-            AND session_id != ?
-            """,
-            (active_session_id,)
-        )
-    else:
-        cursor.execute(
-            """
-            DELETE FROM chat_sessions
-            WHERE session_id NOT IN (SELECT DISTINCT session_id FROM chat_history)
-            """
-        )
-
-    conn.commit()
-    conn.close()
-
-
 def rename_session(session_id, title):
 
     conn = get_connection()
