@@ -20,7 +20,7 @@ if not GROQ_API_KEY:
 
 # Models
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
-LLM_MODEL = "llama-3.3-70b-versatile"
+LLM_MODEL = "llama-3.1-8b-instant"
 
 # Paths
 CHROMA_DB_DIR = BASE_DIR / "chroma_db"

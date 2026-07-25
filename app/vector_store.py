@@ -8,6 +8,11 @@ from config import (
 )
 
 from rag_pipeline import create_chunks, create_chunks_for_file
+import streamlit as st
+
+@st.cache_resource
+def get_cached_embeddings():
+    return HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
 
 
 def build_vector_database(data_dir):
@@ -22,9 +27,7 @@ def build_vector_database(data_dir):
         print("No valid documents found to index.")
         return None
 
-    embeddings = HuggingFaceEmbeddings(
-        model_name=EMBEDDING_MODEL
-    )
+    embeddings = get_cached_embeddings()
 
     db = Chroma.from_documents(
         documents=chunks,
@@ -40,9 +43,7 @@ def build_vector_database(data_dir):
 
 def get_retriever():
 
-    embeddings = HuggingFaceEmbeddings(
-        model_name=EMBEDDING_MODEL
-    )
+    embeddings = get_cached_embeddings()
 
     db = Chroma(
         persist_directory=str(CHROMA_DB_DIR),
@@ -67,9 +68,7 @@ def add_document_to_db(pdf_path):
 
     print(f"Chunks created for new file: {len(chunks)}")
 
-    embeddings = HuggingFaceEmbeddings(
-        model_name=EMBEDDING_MODEL
-    )
+    embeddings = get_cached_embeddings()
 
     db = Chroma(
         persist_directory=str(CHROMA_DB_DIR),
@@ -83,7 +82,7 @@ def add_document_to_db(pdf_path):
 
 def delete_document_from_db(filename):
     print(f"Deleting document {filename} from vector database...")
-    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
+    embeddings = get_cached_embeddings()
     db = Chroma(persist_directory=str(CHROMA_DB_DIR), embedding_function=embeddings)
     
     try:
