@@ -1,5 +1,5 @@
 from langchain_chroma import Chroma
-from langchain_ollama import OllamaEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 
 from config import (
     CHROMA_DB_DIR,
@@ -22,8 +22,8 @@ def build_vector_database(data_dir):
         print("No valid documents found to index.")
         return None
 
-    embeddings = OllamaEmbeddings(
-        model=EMBEDDING_MODEL
+    embeddings = HuggingFaceEmbeddings(
+        model_name=EMBEDDING_MODEL
     )
 
     db = Chroma.from_documents(
@@ -40,8 +40,8 @@ def build_vector_database(data_dir):
 
 def get_retriever():
 
-    embeddings = OllamaEmbeddings(
-        model=EMBEDDING_MODEL
+    embeddings = HuggingFaceEmbeddings(
+        model_name=EMBEDDING_MODEL
     )
 
     db = Chroma(
@@ -67,8 +67,8 @@ def add_document_to_db(pdf_path):
 
     print(f"Chunks created for new file: {len(chunks)}")
 
-    embeddings = OllamaEmbeddings(
-        model=EMBEDDING_MODEL
+    embeddings = HuggingFaceEmbeddings(
+        model_name=EMBEDDING_MODEL
     )
 
     db = Chroma(
@@ -83,7 +83,7 @@ def add_document_to_db(pdf_path):
 
 def delete_document_from_db(filename):
     print(f"Deleting document {filename} from vector database...")
-    embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL)
+    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
     db = Chroma(persist_directory=str(CHROMA_DB_DIR), embedding_function=embeddings)
     
     try:

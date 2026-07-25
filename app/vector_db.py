@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from langchain_chroma import Chroma
-from langchain_ollama import OllamaEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
@@ -41,8 +41,8 @@ def build_vector_database():
 
     print(f"Created chunks: {len(chunks)}")
 
-    embeddings = OllamaEmbeddings(
-        model=EMBEDDING_MODEL
+    embeddings = HuggingFaceEmbeddings(
+        model_name=EMBEDDING_MODEL
     )
 
     db = Chroma.from_documents(

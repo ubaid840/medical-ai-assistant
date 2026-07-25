@@ -19,7 +19,7 @@ if not GROQ_API_KEY:
     raise ValueError("GROQ_API_KEY not found! Please add it to Streamlit Secrets (Settings -> Secrets).")
 
 # Models
-EMBEDDING_MODEL = "nomic-embed-text"
+EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 LLM_MODEL = "llama-3.3-70b-versatile"
 
 # Paths

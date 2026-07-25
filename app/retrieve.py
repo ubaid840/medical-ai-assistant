@@ -1,8 +1,9 @@
 from langchain_chroma import Chroma
-from langchain_community.embeddings import OllamaEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
+import chromadb
 
-embedding = OllamaEmbeddings(
-    model="nomic-embed-text"
+embedding = HuggingFaceEmbeddings(
+    model_name="all-MiniLM-L6-v2"
 )
 
 db = Chroma(
