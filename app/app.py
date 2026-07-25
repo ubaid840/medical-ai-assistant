@@ -1,9 +1,12 @@
 import os
 os.environ["ANONYMIZED_TELEMETRY"] = "False"
 
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+try:
+    __import__('pysqlite3')
+    import sys
+    sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+except ImportError:
+    pass
 
 from pathlib import Path
 import streamlit as st
@@ -21,7 +24,11 @@ from ui.operations import render_operations
 from ui.routines import render_routines
 from ui.audit import render_audit_dashboard
 from ui.cbt import render_cbt_tab
-
+from ui.pediatrics import render_pediatrics
+from ui.dashboard import render_dashboard
+from ui.imaging import render_imaging
+from ui.wearables import render_wearables
+from ui.research import render_research
 
 # =====================================================
 # PAGE CONFIG
@@ -169,16 +176,43 @@ show_disclaimer()
 
 st.divider()
 
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(
+st.markdown("""
+<style>
+/* Aggressive CSS to add vertical bars between tabs */
+div[data-testid="stTabs"] button[data-baseweb="tab"] {
+    border-right: 2px solid #cbd5e1 !important;
+    border-radius: 0px !important;
+    margin-right: 0px !important;
+}
+div[data-testid="stTabs"] button[data-baseweb="tab"]:last-child {
+    border-right: none !important;
+}
+/* For newer Streamlit versions */
+div[data-testid="stTabs"] button[id^="tabs-bui"] {
+    border-right: 2px solid #cbd5e1 !important;
+    border-radius: 0px !important;
+}
+div[data-testid="stTabs"] button[id^="tabs-bui"]:last-child {
+    border-right: none !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13 = st.tabs(
     [
         "💬 Chat",
-        "🔬 Analysis",
-        "💊 Pharmacology",
-        "🧠 Knowledge",
-        "📅 Intake",
-        "💊 Routines",
-        "🔒 Audit",
-        "🧘 Wellness"
+        "｜ 🔬 Analysis",
+        "｜ 💊 Pharmacology",
+        "｜ 🧠 Knowledge",
+        "｜ 📅 Intake",
+        "｜ 💊 Routines",
+        "｜ 🔒 Audit",
+        "｜ 🧘 Wellness",
+        "｜ 👶 Pediatrics",
+        "｜ 📈 Dashboard",
+        "｜ 🩻 Imaging",
+        "｜ ⌚ Wearables",
+        "｜ 🔬 Research"
     ]
 )
 
@@ -247,3 +281,38 @@ with tab7:
 
 with tab8:
     render_cbt_tab()
+
+# =====================================================
+# PEDIATRICS
+# =====================================================
+
+with tab9:
+    render_pediatrics()
+
+# =====================================================
+# DASHBOARD
+# =====================================================
+
+with tab10:
+    render_dashboard()
+
+# =====================================================
+# IMAGING
+# =====================================================
+
+with tab11:
+    render_imaging()
+
+# =====================================================
+# WEARABLES
+# =====================================================
+
+with tab12:
+    render_wearables()
+
+# =====================================================
+# RESEARCH
+# =====================================================
+
+with tab13:
+    render_research()

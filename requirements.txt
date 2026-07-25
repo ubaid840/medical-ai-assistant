@@ -20,3 +20,4 @@ streamlit-echarts
 langgraph
 duckduckgo-search
 pysqlite3-binary
+pydicom

@@ -33,3 +33,18 @@ def calculate_egfr(creatinine, age, is_female, is_black):
         return f"eGFR (CKD-EPI 2021) is {egfr:.1f} mL/min/1.73m²"
     except Exception as e:
         return f"Error calculating eGFR: {e}"
+
+def calculate_cha2ds2_vasc(age, is_female, chf, htn, stroke, vascular, diabetes):
+    try:
+        score = 0
+        if chf: score += 1
+        if htn: score += 1
+        if age >= 75: score += 2
+        elif age >= 65: score += 1
+        if diabetes: score += 1
+        if stroke: score += 2
+        if vascular: score += 1
+        if is_female: score += 1
+        return f"CHA2DS2-VASc score is {score}"
+    except Exception as e:
+        return f"Error calculating CHA2DS2-VASc: {e}"

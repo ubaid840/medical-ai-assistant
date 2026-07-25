@@ -22,11 +22,30 @@ Options:
 1. "pharmacology" - for questions about drugs, dosages, interactions, side effects.
 2. "diagnostician" - for questions about symptoms, disease identification, conditions.
 3. "researcher" - for questions asking about recent news, latest guidelines, or topics not typically found in older medical textbooks.
-4. "general" - for all other general medical or administrative questions.
+4. "pediatrics" - for questions regarding infants, children, and adolescents.
+5. "general" - for all other general medical or administrative questions.
 
 Output ONLY the category name (e.g. pharmacology).
 
 Question: {question}"""
+
+PEDIATRICS_PROMPT = """You are a Pediatrics AI Agent.
+Focus on providing safe, accurate information regarding pediatric care, childhood development, and dosing for children.
+Always emphasize consulting a pediatrician for actual medical advice.
+
+{patient_context}
+
+Conversation History:
+{history_text}
+
+Retrieved Medical Context:
+{context}
+
+Current Question:
+{question}
+
+Answer only from medical context.
+"""
 
 PHARMACOLOGY_PROMPT = """You are a Pharmacology AI Agent.
 Focus on providing safe, accurate information regarding medications, interactions, and pharmacology.
@@ -203,7 +222,8 @@ Route Options:
 5. "care_coordinator" - for creating medication reminders or post-op follow-up routines.
 6. "complex" - if the question involves BOTH significant symptoms AND medication interactions, requiring a multi-agent debate.
 7. "calculator" - for requests to compute medical scores or values like BMI, eGFR, MAP, etc.
-8. "general" - for all other general medical or administrative questions.
+8. "pediatrics" - for questions regarding infants, children, and adolescents.
+9. "general" - for all other general medical or administrative questions.
 
 Emergency Detection:
 If the user mentions severe chest pain, inability to breathe, heavy bleeding, or suicide, output route "emergency".
@@ -276,7 +296,7 @@ def router_node(state: AgentState):
         route = "emergency"
         sentiment = "anxious"
     
-    valid_routes = ["pharmacology", "diagnostician", "researcher", "scheduler", "care_coordinator", "complex", "calculator", "general", "emergency"]
+    valid_routes = ["pharmacology", "diagnostician", "researcher", "scheduler", "care_coordinator", "complex", "calculator", "pediatrics", "general", "emergency"]
     if not any(r in route for r in valid_routes):
         route = "general"
     else:
@@ -289,7 +309,7 @@ def router_node(state: AgentState):
 
 def calculator_node(state: AgentState):
     logger.info("Executing Calculator Node")
-    from medical_calculator import calculate_bmi, calculate_map, calculate_egfr
+    from medical_calculator import calculate_bmi, calculate_map, calculate_egfr, calculate_cha2ds2_vasc
     
     # We ask the LLM to extract the parameters for the calculator in JSON format
     extract_prompt = f"""You are a medical calculator parameter extractor.
@@ -298,6 +318,7 @@ Return ONLY valid JSON matching one of these structures based on what they want 
 {{ "calc": "bmi", "weight_kg": float, "height_m": float }}
 {{ "calc": "map", "systolic": float, "diastolic": float }}
 {{ "calc": "egfr", "creatinine": float, "age": int, "is_female": bool, "is_black": bool }}
+{{ "calc": "cha2ds2_vasc", "age": int, "is_female": bool, "chf": bool, "htn": bool, "stroke": bool, "vascular": bool, "diabetes": bool }}
 
 If you cannot extract the parameters, return {{ "error": "Missing parameters" }}.
 Question: {state['question']}
@@ -319,6 +340,8 @@ Question: {state['question']}
             calc_result = calculate_map(params.get("systolic", 0), params.get("diastolic", 0))
         elif params.get("calc") == "egfr":
             calc_result = calculate_egfr(params.get("creatinine", 1.0), params.get("age", 50), params.get("is_female", False), params.get("is_black", False))
+        elif params.get("calc") == "cha2ds2_vasc":
+            calc_result = calculate_cha2ds2_vasc(params.get("age", 50), params.get("is_female", False), params.get("chf", False), params.get("htn", False), params.get("stroke", False), params.get("vascular", False), params.get("diabetes", False))
         else:
             calc_result = "Unsupported calculation."
     except Exception as e:
@@ -377,6 +400,16 @@ def pharmacology_node(state: AgentState):
         return {"pharmacology_response": str(ans)}
     else:
         return {"final_prompt": prompt}
+
+def pediatrics_node(state: AgentState):
+    logger.info("Executing Pediatrics Node")
+    prompt = PEDIATRICS_PROMPT.format(
+        patient_context=state["patient_context"],
+        history_text=state["history_text"],
+        context=state["context"],
+        question=state["question"]
+    )
+    return {"final_prompt": prompt}
 
 def general_node(state: AgentState):
     logger.info("Executing General Node")
@@ -475,6 +508,8 @@ def route_logic(state: AgentState):
         return "care_coordinator"
     elif route == "calculator":
         return "calculator"
+    elif route == "pediatrics":
+        return "pediatrics"
     elif route == "complex":
         return ["pharmacology", "diagnostician"] # Parallel execution!
     else:
@@ -490,6 +525,7 @@ builder.add_node("researcher", researcher_node)
 builder.add_node("scheduler", scheduler_node)
 builder.add_node("care_coordinator", care_coordinator_node)
 builder.add_node("calculator", calculator_node)
+builder.add_node("pediatrics", pediatrics_node)
 builder.add_node("general", general_node)
 builder.add_node("synthesizer", synthesizer_node)
 builder.add_node("generator", generation_node)
@@ -501,7 +537,7 @@ builder.add_edge(START, "router")
 builder.add_conditional_edges(
     "router",
     route_logic,
-    ["pharmacology", "diagnostician", "researcher", "scheduler", "care_coordinator", "calculator", "general", "emergency"]
+    ["pharmacology", "diagnostician", "researcher", "scheduler", "care_coordinator", "calculator", "pediatrics", "general", "emergency"]
 )
 
 # Edges from specific agents
@@ -509,6 +545,7 @@ builder.add_edge("researcher", "generator")
 builder.add_edge("scheduler", "generator")
 builder.add_edge("care_coordinator", "generator")
 builder.add_edge("calculator", "generator")
+builder.add_edge("pediatrics", "generator")
 builder.add_edge("general", "generator")
 
 # For pharma and diag, if they were part of complex, they go to synthesizer. Else generator.

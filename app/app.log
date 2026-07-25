@@ -318,3 +318,101 @@
 2026-07-18 20:57:45,845 - agents - INFO - Executing Final Generation Node
 2026-07-18 20:57:45,845 - agents - INFO - Calling Groq API with model llama-3.3-70b-versatile
 2026-07-18 20:57:46,001 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 19:59:25,378 - httpx - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embed "HTTP/1.1 200 OK"
+2026-07-25 19:59:25,405 - agents - INFO - Executing Router Node
+2026-07-25 19:59:25,405 - agents - INFO - Calling Groq API with model llama-3.3-70b-versatile
+2026-07-25 19:59:26,220 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 19:59:26,241 - agents - INFO - Executing Pediatrics Node
+2026-07-25 19:59:26,242 - agents - INFO - Executing Final Generation Node
+2026-07-25 19:59:26,242 - agents - INFO - Calling Groq API with model llama-3.3-70b-versatile
+2026-07-25 19:59:26,432 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 20:00:02,608 - httpx - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embed "HTTP/1.1 200 OK"
+2026-07-25 20:00:02,612 - agents - INFO - Executing Router Node
+2026-07-25 20:00:02,612 - agents - INFO - Calling Groq API with model llama-3.3-70b-versatile
+2026-07-25 20:00:03,118 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 20:00:03,120 - agents - INFO - Executing Calculator Node
+2026-07-25 20:00:03,121 - agents - INFO - Calling Groq API with model llama-3.3-70b-versatile
+2026-07-25 20:00:03,600 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 20:00:03,602 - agents - INFO - Executing Final Generation Node
+2026-07-25 20:00:03,602 - agents - INFO - Calling Groq API with model llama-3.3-70b-versatile
+2026-07-25 20:00:03,886 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 20:00:28,001 - httpx - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embed "HTTP/1.1 200 OK"
+2026-07-25 20:00:28,005 - agents - INFO - Executing Router Node
+2026-07-25 20:00:28,005 - agents - INFO - Calling Groq API with model llama-3.3-70b-versatile
+2026-07-25 20:00:28,448 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 20:00:28,449 - agents - INFO - Executing Pharmacology Node
+2026-07-25 20:00:28,450 - agents - INFO - Executing Final Generation Node
+2026-07-25 20:00:28,450 - agents - INFO - Calling Groq API with model llama-3.3-70b-versatile
+2026-07-25 20:00:28,726 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 20:00:45,671 - httpx - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embed "HTTP/1.1 200 OK"
+2026-07-25 20:00:45,675 - agents - INFO - Executing Router Node
+2026-07-25 20:00:45,675 - agents - INFO - Calling Groq API with model llama-3.3-70b-versatile
+2026-07-25 20:00:46,345 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 20:00:46,346 - agents - INFO - Executing Diagnostician Node
+2026-07-25 20:00:46,346 - agents - INFO - Executing Final Generation Node
+2026-07-25 20:00:46,347 - agents - INFO - Calling Groq API with model llama-3.3-70b-versatile
+2026-07-25 20:00:46,545 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 20:01:07,236 - httpx - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embed "HTTP/1.1 200 OK"
+2026-07-25 20:01:07,240 - agents - INFO - Executing Router Node
+2026-07-25 20:01:07,240 - agents - INFO - Calling Groq API with model llama-3.3-70b-versatile
+2026-07-25 20:01:07,607 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 20:01:07,609 - agents - INFO - Executing Diagnostician Node
+2026-07-25 20:01:07,610 - agents - INFO - Calling Groq API with model llama-3.3-70b-versatile
+2026-07-25 20:01:07,611 - agents - INFO - Executing Pharmacology Node
+2026-07-25 20:01:07,612 - agents - INFO - Calling Groq API with model llama-3.3-70b-versatile
+2026-07-25 20:01:09,493 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 20:01:09,500 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 20:01:09,513 - agents - INFO - Executing Synthesizer Node
+2026-07-25 20:01:09,513 - agents - INFO - Executing Final Generation Node
+2026-07-25 20:01:09,513 - agents - INFO - Calling Groq API with model llama-3.3-70b-versatile
+2026-07-25 20:01:09,715 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 20:01:29,040 - httpx - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embed "HTTP/1.1 200 OK"
+2026-07-25 20:01:29,045 - agents - INFO - Executing Router Node
+2026-07-25 20:01:29,045 - agents - INFO - Calling Groq API with model llama-3.3-70b-versatile
+2026-07-25 20:01:29,437 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 20:01:29,439 - agents - INFO - Executing Emergency Node - HARD ESCALATION TRIGGERED
+2026-07-25 20:11:49,747 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 20:12:09,347 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 20:20:38,357 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 20:34:37,466 - httpx - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embed "HTTP/1.1 200 OK"
+2026-07-25 20:34:38,003 - httpx - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embed "HTTP/1.1 200 OK"
+2026-07-25 20:34:38,010 - agents - INFO - Executing Router Node
+2026-07-25 20:34:38,010 - agents - INFO - Calling Groq API with model llama-3.3-70b-versatile
+2026-07-25 20:34:41,411 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 20:34:41,414 - agents - INFO - Executing Diagnostician Node
+2026-07-25 20:34:41,415 - agents - INFO - Executing Final Generation Node
+2026-07-25 20:34:41,415 - agents - INFO - Calling Groq API with model llama-3.3-70b-versatile
+2026-07-25 20:34:42,204 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 20:38:55,671 - httpx - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embed "HTTP/1.1 200 OK"
+2026-07-25 20:38:55,675 - agents - INFO - Executing Router Node
+2026-07-25 20:38:55,676 - agents - INFO - Calling Groq API with model llama-3.3-70b-versatile
+2026-07-25 20:38:57,584 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 20:38:57,587 - agents - INFO - Executing Diagnostician Node
+2026-07-25 20:38:57,587 - agents - INFO - Executing Final Generation Node
+2026-07-25 20:38:57,587 - agents - INFO - Calling Groq API with model llama-3.3-70b-versatile
+2026-07-25 20:38:57,799 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 20:39:00,730 - httpx - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embed "HTTP/1.1 200 OK"
+2026-07-25 20:39:00,736 - agents - INFO - Executing Router Node
+2026-07-25 20:39:00,736 - agents - INFO - Calling Groq API with model llama-3.3-70b-versatile
+2026-07-25 20:39:01,817 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 20:39:01,819 - agents - INFO - Executing Pharmacology Node
+2026-07-25 20:39:01,819 - agents - INFO - Executing Final Generation Node
+2026-07-25 20:39:01,819 - agents - INFO - Calling Groq API with model llama-3.3-70b-versatile
+2026-07-25 20:39:02,057 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 20:39:04,139 - httpx - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embed "HTTP/1.1 200 OK"
+2026-07-25 20:39:04,144 - agents - INFO - Executing Router Node
+2026-07-25 20:39:04,144 - agents - INFO - Calling Groq API with model llama-3.3-70b-versatile
+2026-07-25 20:39:04,531 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 20:39:04,533 - agents - INFO - Executing Diagnostician Node
+2026-07-25 20:39:04,533 - agents - INFO - Executing Final Generation Node
+2026-07-25 20:39:04,534 - agents - INFO - Calling Groq API with model llama-3.3-70b-versatile
+2026-07-25 20:39:04,757 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 20:59:09,663 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 20:59:28,389 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 20:59:56,924 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-25 21:01:51,107 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-25 21:02:38,413 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-07-25 21:02:59,312 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-07-25 21:03:15,424 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-07-25 21:05:43,126 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-07-25 21:07:10,587 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
