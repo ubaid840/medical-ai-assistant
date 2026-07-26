@@ -28,9 +28,9 @@ Output ONLY the category name (e.g. pharmacology).
 
 Question: {question}"""
 
-PHARMACOLOGY_PROMPT = """You are a Pharmacology AI Agent.
-Focus on providing safe, accurate information regarding medications, interactions, and pharmacology.
-Never prescribe medication. Always advise consulting a physician.
+PHARMACOLOGY_PROMPT = """You are a specialized Clinical Pharmacology AI Agent.
+Focus on providing safe, accurate, evidence-based information regarding medications, pharmacokinetics, interactions, and side effects.
+Apply rigorous clinical pharmacology guidelines. Never prescribe medication. Always advise consulting a physician.
 
 CRITICAL ANTI-HALLUCINATION RULE: If a term is misspelled, unrecognized, or not covered in the medical context, DO NOT hallucinate or invent definitions. Politely state that you do not recognize the term and ask for clarification.
 
@@ -48,9 +48,10 @@ Current Question:
 Answer only from medical context.
 """
 
-DIAGNOSTICIAN_PROMPT = """You are a Diagnostic AI Agent.
-Focus on analyzing symptoms and medical conditions accurately.
-Do not provide a definitive diagnosis, use language like "could be indicative of" or "is associated with".
+DIAGNOSTICIAN_PROMPT = """You are a highly specialized Clinical Diagnostic AI Agent (similar to BioMistral and ClinicalCamel).
+Focus on analyzing symptoms and medical conditions accurately using current clinical guidelines and best practices.
+You possess advanced clinical reasoning. Evaluate differential diagnoses based on the provided patient context and retrieved literature.
+Do not provide a definitive diagnosis, use language like "could be indicative of", "is associated with", or "differential diagnosis includes".
 
 CRITICAL ANTI-HALLUCINATION RULE: If a term is misspelled, unrecognized, or not covered in the medical context, DO NOT hallucinate or invent definitions. Politely state that you do not recognize the term and ask for clarification.
 
@@ -102,7 +103,7 @@ Current Question:
 Answer only from medical context.
 """
 
-def call_llm(prompt: str, temperature: float = 0.1, max_tokens: int = 700, privacy_mode: bool = False, stream: bool = False) -> Union[str, Generator[str, None, None]]:
+def call_llm(prompt: str, temperature: float = 0.1, max_tokens: int = 700, privacy_mode: bool = False, stream: bool = False, override_model: str = None) -> Union[str, Generator[str, None, None]]:
     if privacy_mode:
         # Call local Ollama
         url = "http://localhost:11434/api/generate"
@@ -136,10 +137,11 @@ def call_llm(prompt: str, temperature: float = 0.1, max_tokens: int = 700, priva
     else:
         # Call Groq
         try:
-            logger.info(f"Calling Groq API with model {LLM_MODEL}")
+            active_model = override_model if override_model else LLM_MODEL
+            logger.info(f"Calling Groq API with model {active_model}")
             if stream:
                 response = client.chat.completions.create(
-                    model=LLM_MODEL,
+                    model=active_model,
                     messages=[{"role": "user", "content": prompt}],
                     temperature=temperature,
                     max_tokens=max_tokens,
@@ -152,7 +154,7 @@ def call_llm(prompt: str, temperature: float = 0.1, max_tokens: int = 700, priva
                 return generate()
             else:
                 response = client.chat.completions.create(
-                    model=LLM_MODEL,
+                    model=active_model,
                     messages=[{"role": "user", "content": prompt}],
                     temperature=temperature,
                     max_tokens=max_tokens
@@ -365,7 +367,7 @@ def diagnostician_node(state: AgentState):
     )
     if state["route"] == "complex":
         # Generate full answer non-streaming for the debate
-        ans = call_llm(prompt, temperature=0.1, max_tokens=500, privacy_mode=state["privacy_mode"], stream=False)
+        ans = call_llm(prompt, temperature=0.1, max_tokens=500, privacy_mode=state["privacy_mode"], stream=False, override_model="llama-3.3-70b-versatile")
         return {"diagnostician_response": str(ans)}
     else:
         return {"final_prompt": prompt}
@@ -380,7 +382,7 @@ def pharmacology_node(state: AgentState):
     )
     if state["route"] == "complex":
         # Generate full answer non-streaming for the debate
-        ans = call_llm(prompt, temperature=0.1, max_tokens=500, privacy_mode=state["privacy_mode"], stream=False)
+        ans = call_llm(prompt, temperature=0.1, max_tokens=500, privacy_mode=state["privacy_mode"], stream=False, override_model="llama-3.3-70b-versatile")
         return {"pharmacology_response": str(ans)}
     else:
         return {"final_prompt": prompt}
@@ -462,7 +464,13 @@ def generation_node(state: AgentState):
     if state["language"].lower() != "english":
         final_prompt += f"\\n\\nCRITICAL INSTRUCTION: You must strictly translate and provide your final response entirely in {state['language']}. Keep the same formatting."
         
-    answer = call_llm(final_prompt, temperature=0.1, max_tokens=800, privacy_mode=state["privacy_mode"], stream=state["stream"])
+    if state["route"] in ["pharmacology", "diagnostician"]:
+        # Upgrade these specific nodes to the heavy clinical model during final streaming generation
+        answer = call_llm(final_prompt, temperature=0.1, max_tokens=800, privacy_mode=state["privacy_mode"], stream=state["stream"], override_model="llama-3.3-70b-versatile")
+    else:
+        # Default speed model for routing and general queries
+        answer = call_llm(final_prompt, temperature=0.1, max_tokens=800, privacy_mode=state["privacy_mode"], stream=state["stream"])
+        
     return {"final_generator": answer}
 
 
