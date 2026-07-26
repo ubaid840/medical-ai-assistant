@@ -3,14 +3,29 @@ import numpy as np
 
 def render_imaging():
     st.markdown("""
-        <div style='background: white; padding: 25px 30px; border-radius: 16px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; margin-bottom: 20px;'>
-            <div style='display: flex; align-items: center; gap: 15px; margin-bottom: 8px;'>
-                <div style='background: linear-gradient(135deg, #e0e7ff, #c7d2fe); color: #4f46e5; padding: 10px; border-radius: 12px; box-shadow: inset 0 2px 4px rgba(255,255,255,0.5);'>
-                    <span style='font-size: 24px;'>🩻</span>
-                </div>
-                <h3 style='color: #0f172a; font-weight: 800; font-size: 1.7rem; margin: 0;'>Advanced DICOM Viewer</h3>
-            </div>
-            <p style='color: #64748b; font-size: 1.1rem; margin-top: 5px; margin-bottom: 0;'>Upload and visualize high-resolution medical imaging (DICOM) files.</p>
+        <div style="
+        background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
+        border-radius: 20px;
+        padding: 35px 30px;
+        color: white;
+        box-shadow: 0 20px 40px -10px rgba(99, 102, 241, 0.4);
+        margin-bottom: 25px;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.2);
+        ">
+        <div style="position: absolute; top: -50px; right: -50px; width: 250px; height: 250px; background: rgba(255,255,255,0.1); border-radius: 50%; filter: blur(30px); pointer-events: none;"></div>
+        <div style="position: absolute; bottom: -80px; left: 10%; width: 200px; height: 200px; background: rgba(255,255,255,0.15); border-radius: 50%; filter: blur(25px); pointer-events: none;"></div>
+
+        <div style="display: flex; align-items: center; gap: 25px; position: relative; z-index: 1;">
+        <div style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); width: 80px; height: 80px; border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.4);">
+        <span style="font-size: 40px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));">🦴</span>
+        </div>
+        <div>
+        <h2 style="margin: 0; font-size: 2.2rem; font-weight: 900; letter-spacing: -0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.15);">Advanced DICOM Viewer</h2>
+        <p style="margin: 8px 0 0 0; font-size: 1.1rem; opacity: 0.95; font-weight: 500; letter-spacing: 0.2px;">Upload and visualize high-resolution medical imaging (DICOM) files.</p>
+        </div>
+        </div>
         </div>
     """, unsafe_allow_html=True)
     
@@ -28,7 +43,16 @@ def render_imaging():
             col1, col2 = st.columns([0.6, 0.4])
             
             with col1:
-                st.markdown("### 🖼️ Image Viewer")
+                st.markdown(
+                    """
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                        <div style="background: linear-gradient(135deg, #818cf8, #4f46e5); color: white; width: 48px; height: 48px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 24px; box-shadow: 0 4px 10px rgba(79,70,229,0.3);">
+                            🖼️
+                        </div>
+                        <h3 style="margin: 0; font-weight: 800; color: #0f172a; font-size: 1.5rem; letter-spacing: -0.5px;">Image Viewer</h3>
+                    </div>
+                    """, unsafe_allow_html=True
+                )
                 # Normalize pixel array for display
                 image_2d = ds.pixel_array.astype(float)
                 image_2d_scaled = (np.maximum(image_2d,0) / image_2d.max()) * 255.0
@@ -37,7 +61,16 @@ def render_imaging():
                 st.image(image_2d_scaled, caption=f"Modality: {ds.get('Modality', 'Unknown')}", use_container_width=True, clamp=True)
                 
             with col2:
-                st.markdown("### 📋 Patient Metadata")
+                st.markdown(
+                    """
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                        <div style="background: linear-gradient(135deg, #34d399, #059669); color: white; width: 48px; height: 48px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 24px; box-shadow: 0 4px 10px rgba(5,150,105,0.3);">
+                            📋
+                        </div>
+                        <h3 style="margin: 0; font-weight: 800; color: #0f172a; font-size: 1.5rem; letter-spacing: -0.5px;">Patient Metadata</h3>
+                    </div>
+                    """, unsafe_allow_html=True
+                )
                 metadata = {
                     "Patient ID": ds.get('PatientID', 'N/A'),
                     "Patient Name": str(ds.get('PatientName', 'N/A')),

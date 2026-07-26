@@ -1,24 +1,22 @@
-from langchain_chroma import Chroma
-from langchain_community.embeddings import HuggingFaceEmbeddings
-
+# Imports moved inside functions to improve startup time
 from config import (
     CHROMA_DB_DIR,
     EMBEDDING_MODEL,
     TOP_K
 )
 
-from rag_pipeline import create_chunks, create_chunks_for_file
 import streamlit as st
 
-@st.cache_resource
+@st.cache_resource(show_spinner=False)
 def get_cached_embeddings():
+    from langchain_community.embeddings import HuggingFaceEmbeddings
     return HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
 
 
 def build_vector_database(data_dir):
 
     print("Loading documents...")
-
+    from rag_pipeline import create_chunks
     chunks = create_chunks(data_dir)
 
     print(f"Chunks created: {len(chunks)}")
@@ -29,6 +27,7 @@ def build_vector_database(data_dir):
 
     embeddings = get_cached_embeddings()
 
+    from langchain_chroma import Chroma
     db = Chroma.from_documents(
         documents=chunks,
         embedding=embeddings,
@@ -41,10 +40,12 @@ def build_vector_database(data_dir):
 
 
 
+@st.cache_resource(show_spinner=False)
 def get_retriever():
 
     embeddings = get_cached_embeddings()
 
+    from langchain_chroma import Chroma
     db = Chroma(
         persist_directory=str(CHROMA_DB_DIR),
         embedding_function=embeddings
@@ -63,13 +64,14 @@ def get_retriever():
 def add_document_to_db(pdf_path):
 
     print(f"Loading document {pdf_path}...")
-
+    from rag_pipeline import create_chunks_for_file
     chunks = create_chunks_for_file(pdf_path)
 
     print(f"Chunks created for new file: {len(chunks)}")
 
     embeddings = get_cached_embeddings()
 
+    from langchain_chroma import Chroma
     db = Chroma(
         persist_directory=str(CHROMA_DB_DIR),
         embedding_function=embeddings
@@ -83,6 +85,7 @@ def add_document_to_db(pdf_path):
 def delete_document_from_db(filename):
     print(f"Deleting document {filename} from vector database...")
     embeddings = get_cached_embeddings()
+    from langchain_chroma import Chroma
     db = Chroma(persist_directory=str(CHROMA_DB_DIR), embedding_function=embeddings)
     
     try:

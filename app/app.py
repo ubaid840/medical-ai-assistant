@@ -98,41 +98,44 @@ st.markdown(
 position: relative;
 overflow: hidden;
 text-align: center; 
-padding-top: 3rem; 
-padding-bottom: 3rem; 
-margin-bottom: 2rem;
-border-radius: 20px;
-background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
-box-shadow: 0 10px 30px rgba(14, 165, 233, 0.05);
-border: 2px solid #ef4444;
+padding-top: 3.5rem; 
+padding-bottom: 3.5rem; 
+margin-bottom: 2.5rem;
+border-radius: 28px;
+background: rgba(255, 255, 255, 0.6);
+backdrop-filter: blur(20px);
+-webkit-backdrop-filter: blur(20px);
+box-shadow: 0 25px 50px -12px rgba(14, 165, 233, 0.15), inset 0 1px 0 rgba(255,255,255,0.8);
+border: 1px solid rgba(255, 255, 255, 0.8);
 ">
     <!-- Animated EKG Background -->
-    <svg viewBox="0 0 1000 200" preserveAspectRatio="none" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.15; z-index: 0; pointer-events: none;">
-        <path class="ekg-line" d="M0,100 L250,100 L270,70 L290,140 L320,30 L350,170 L370,80 L390,100 L700,100 L720,70 L740,140 L770,30 L800,170 L820,80 L840,100 L1000,100" fill="none" stroke="#0ea5e9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <svg viewBox="0 0 1000 200" preserveAspectRatio="none" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.12; z-index: 0; pointer-events: none;">
+        <path class="ekg-line" d="M0,100 L250,100 L270,70 L290,140 L320,30 L350,170 L370,80 L390,100 L700,100 L720,70 L740,140 L770,30 L800,170 L820,80 L840,100 L1000,100" fill="none" stroke="#0ea5e9" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
 
 <!-- Medical Plus Symbols -->
-<div style="position: absolute; top: 25px; left: 25px; color: #991b1b; font-size: 2.5rem; font-weight: bold; line-height: 1; opacity: 0.6; z-index: 1;">+</div>
-<div style="position: absolute; top: 25px; right: 25px; color: #991b1b; font-size: 2.5rem; font-weight: bold; line-height: 1; opacity: 0.6; z-index: 1;">+</div>
+<div style="position: absolute; top: 30px; left: 30px; color: #ef4444; font-size: 2.5rem; font-weight: bold; line-height: 1; opacity: 0.4; z-index: 1;">+</div>
+<div style="position: absolute; top: 30px; right: 30px; color: #ef4444; font-size: 2.5rem; font-weight: bold; line-height: 1; opacity: 0.4; z-index: 1;">+</div>
+<div style="position: absolute; bottom: 30px; left: 40px; color: #ef4444; font-size: 1.5rem; font-weight: bold; line-height: 1; opacity: 0.4; z-index: 1;">+</div>
 
 <div style="position: relative; z-index: 1;">
-<div style="position: relative; display: inline-flex; justify-content: center; align-items: center; margin-bottom: 1.5rem;">
-<div style="position: absolute; width: 120px; height: 120px; background: radial-gradient(circle, rgba(14,165,233,0.15) 0%, rgba(255,255,255,0) 70%); border-radius: 50%;"></div>
-<div style="display: inline-flex; align-items: center; justify-content: center; width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #0ea5e9, #6366f1); box-shadow: 0 10px 25px rgba(14, 165, 233, 0.4); z-index: 1;">
-<span style="font-size: 40px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); color: white;">🩺</span>
+<div style="position: relative; display: inline-flex; justify-content: center; align-items: center; margin-bottom: 1.8rem;">
+<div style="position: absolute; width: 140px; height: 140px; background: radial-gradient(circle, rgba(14,165,233,0.2) 0%, rgba(255,255,255,0) 70%); border-radius: 50%;"></div>
+<div style="display: inline-flex; align-items: center; justify-content: center; width: 88px; height: 88px; border-radius: 28px; background: linear-gradient(135deg, #0ea5e9, #4f46e5); box-shadow: 0 15px 35px rgba(14, 165, 233, 0.4), inset 0 2px 4px rgba(255,255,255,0.3); z-index: 1;">
+<span style="font-size: 46px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); color: white;">🩺</span>
 </div>
 </div>
-<h1 style="font-size: 3.5rem; font-weight: 900; margin: 0 0 10px 0; background: linear-gradient(135deg, #0ea5e9, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1.5px; line-height: 1.1;">
+<h1 style="font-size: 3.8rem; font-weight: 900; margin: 0 0 12px 0; background: linear-gradient(135deg, #0f172a, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1.5px; line-height: 1.1; text-shadow: 0 10px 30px rgba(14,165,233,0.1);">
 Medical AI Assistant
 </h1>
-<p style="font-size: 1.15rem; color: #64748b; margin-top: 0; font-weight: 500; letter-spacing: 0.2px;">
+<p style="font-size: 1.25rem; color: #475569; margin-top: 0; font-weight: 600; letter-spacing: 0.2px;">
 Advanced Clinical Intelligence & Diagnostic Analysis
 </p>
-<div style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
-<span style="background: white; color: #475569; padding: 6px 14px; border-radius: 30px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">⚡ Groq AI</span>
-<span style="background: white; color: #475569; padding: 6px 14px; border-radius: 30px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">🔗 LangChain</span>
-<span style="background: white; color: #475569; padding: 6px 14px; border-radius: 30px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">🗄️ ChromaDB</span>
-<span style="background: white; color: #475569; padding: 6px 14px; border-radius: 30px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">🦙 Ollama</span>
+<div style="margin-top: 1.8rem; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+<span style="background: rgba(255,255,255,0.7); backdrop-filter: blur(5px); color: #0f172a; padding: 8px 18px; border-radius: 30px; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid rgba(255,255,255,0.8);">⚡ Groq AI</span>
+<span style="background: rgba(255,255,255,0.7); backdrop-filter: blur(5px); color: #0f172a; padding: 8px 18px; border-radius: 30px; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid rgba(255,255,255,0.8);">🔗 LangChain</span>
+<span style="background: rgba(255,255,255,0.7); backdrop-filter: blur(5px); color: #0f172a; padding: 8px 18px; border-radius: 30px; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid rgba(255,255,255,0.8);">🗄️ ChromaDB</span>
+<span style="background: rgba(255,255,255,0.7); backdrop-filter: blur(5px); color: #0f172a; padding: 8px 18px; border-radius: 30px; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid rgba(255,255,255,0.8);">🦙 Ollama</span>
 </div>
 </div>
 </div>
@@ -211,7 +214,7 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13
         "｜ 🧘 Wellness",
         "｜ 👶 Pediatrics",
         "｜ 📈 Dashboard",
-        "｜ 🩻 Imaging",
+        "｜ 🦴 Imaging",
         "｜ ⌚ Wearables",
         "｜ 🔬 Research"
     ]
@@ -317,3 +320,5 @@ with tab12:
 
 with tab13:
     render_research()
+
+# Triggering reload 9

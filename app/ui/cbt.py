@@ -8,11 +8,29 @@ def render_cbt_tab():
     """
     st.markdown(
         """
-        <div style="background: linear-gradient(135deg, #eef2ff, #ede9fe); padding: 25px; border-radius: 15px; border-left: 5px solid #6366f1; margin-bottom: 25px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
-            <h2 style="color: #4f46e5; margin-top: 0; display: flex; align-items: center; gap: 10px;">
-                🧠 Mental Wellness & Digital CBT
-            </h2>
-            <p style="color: #475569; font-size: 1.1rem; margin-bottom: 0;">Your judgment-free zone for cognitive behavioral exercises and mood tracking.</p>
+        <div style="
+        background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%);
+        border-radius: 20px;
+        padding: 35px 30px;
+        color: white;
+        box-shadow: 0 20px 40px -10px rgba(168, 85, 247, 0.4);
+        margin-bottom: 25px;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.2);
+        ">
+        <div style="position: absolute; top: -50px; right: -50px; width: 250px; height: 250px; background: rgba(255,255,255,0.1); border-radius: 50%; filter: blur(30px); pointer-events: none;"></div>
+        <div style="position: absolute; bottom: -80px; left: 10%; width: 200px; height: 200px; background: rgba(255,255,255,0.15); border-radius: 50%; filter: blur(25px); pointer-events: none;"></div>
+
+        <div style="display: flex; align-items: center; gap: 25px; position: relative; z-index: 1;">
+        <div style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); width: 80px; height: 80px; border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.4);">
+        <span style="font-size: 40px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));">🧠</span>
+        </div>
+        <div>
+        <h2 style="margin: 0; font-size: 2.2rem; font-weight: 900; letter-spacing: -0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.15);">Mental Wellness & Digital CBT</h2>
+        <p style="margin: 8px 0 0 0; font-size: 1.1rem; opacity: 0.95; font-weight: 500; letter-spacing: 0.2px;">Your judgment-free zone for cognitive behavioral exercises and mood tracking.</p>
+        </div>
+        </div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -23,8 +41,11 @@ def render_cbt_tab():
     with col1:
         st.markdown(
             """
-            <div style="background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); border: 1px solid #f1f5f9;">
-                <h3 style="color: #334155; margin-top: 0;">📊 Mood Journal</h3>
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                <div style="background: linear-gradient(135deg, #c084fc, #9333ea); color: white; width: 48px; height: 48px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 24px; box-shadow: 0 4px 10px rgba(147,51,234,0.3);">
+                    📊
+                </div>
+                <h3 style="margin: 0; font-weight: 800; color: #0f172a; font-size: 1.5rem; letter-spacing: -0.5px;">Mood Journal</h3>
             </div>
             """, unsafe_allow_html=True
         )
@@ -53,8 +74,11 @@ def render_cbt_tab():
     with col2:
         st.markdown(
             """
-            <div style="background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); border: 1px solid #f1f5f9;">
-                <h3 style="color: #334155; margin-top: 0;">🧘 Digital CBT Exercises</h3>
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                <div style="background: linear-gradient(135deg, #f472b6, #db2777); color: white; width: 48px; height: 48px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 24px; box-shadow: 0 4px 10px rgba(219,39,119,0.3);">
+                    🧘
+                </div>
+                <h3 style="margin: 0; font-weight: 800; color: #0f172a; font-size: 1.5rem; letter-spacing: -0.5px;">Digital CBT Exercises</h3>
             </div>
             """, unsafe_allow_html=True
         )

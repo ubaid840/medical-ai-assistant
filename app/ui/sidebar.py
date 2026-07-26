@@ -31,33 +31,49 @@ def render_sidebar(session_id=None):
 .ekg-line-sidebar {
     stroke-dasharray: 2000;
     stroke-dashoffset: 2000;
-    animation: draw-ekg-sidebar 6s infinite linear;
+    animation: draw-ekg-sidebar 4s infinite linear;
 }
 @keyframes draw-ekg-sidebar {
     0% { stroke-dashoffset: 2000; }
     50% { stroke-dashoffset: 0; }
     100% { stroke-dashoffset: -2000; }
 }
+.premium-sidebar-card {
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 25px;
+    padding: 25px 15px;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    border-radius: 24px;
+    box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+    position: relative;
+    overflow: hidden;
+    color: white;
+}
+.premium-glow {
+    position: absolute;
+    top: -50%; left: -50%; width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+}
 </style>
-<div style="text-align: center; margin-top: 5px; margin-bottom: 25px; padding: 20px 10px; background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%); border-radius: 20px; border: 2px solid #ef4444; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); position: relative; overflow: hidden;">
+<div class="premium-sidebar-card">
+<div class="premium-glow"></div>
 <!-- Animated EKG Background -->
-<svg viewBox="0 0 1000 200" preserveAspectRatio="none" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.15; z-index: 0; pointer-events: none;">
-<path class="ekg-line-sidebar" d="M0,100 L250,100 L270,70 L290,140 L320,30 L350,170 L370,80 L390,100 L700,100 L720,70 L740,140 L770,30 L800,170 L820,80 L840,100 L1000,100" fill="none" stroke="#0ea5e9" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+<svg viewBox="0 0 1000 200" preserveAspectRatio="none" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.25; z-index: 0; pointer-events: none;">
+<path class="ekg-line-sidebar" d="M0,100 L250,100 L270,70 L290,140 L320,30 L350,170 L370,80 L390,100 L700,100 L720,70 L740,140 L770,30 L800,170 L820,80 L840,100 L1000,100" fill="none" stroke="#38bdf8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
-<!-- Medical Plus Symbols -->
-<div style="position: absolute; top: 15px; left: 15px; color: #991b1b; font-size: 2rem; font-weight: bold; line-height: 1; opacity: 0.6; z-index: 1;">+</div>
-<div style="position: absolute; top: 15px; right: 15px; color: #991b1b; font-size: 2rem; font-weight: bold; line-height: 1; opacity: 0.6; z-index: 1;">+</div>
 
 <div style="position: relative; z-index: 1;">
-<div style="position: absolute; top: -20px; left: -20px; width: 80px; height: 80px; background: radial-gradient(circle, rgba(14,165,233,0.1) 0%, rgba(255,255,255,0) 70%); border-radius: 50%;"></div>
-<div style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #0ea5e9, #6366f1); box-shadow: 0 8px 20px rgba(14, 165, 233, 0.35); margin-bottom: 15px;">
-<span style="font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); color: white;">🩺</span>
+<div style="display: inline-flex; align-items: center; justify-content: center; width: 72px; height: 72px; border-radius: 20px; background: linear-gradient(135deg, #0ea5e9, #4f46e5); box-shadow: 0 10px 25px rgba(14, 165, 233, 0.5); border: 1px solid rgba(255,255,255,0.2); margin-bottom: 15px;">
+<span style="font-size: 36px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); color: white;">🩺</span>
 </div>
-<h2 style="font-size: 1.6rem; font-weight: 900; margin: 0; color: #0f172a; letter-spacing: -0.5px; line-height: 1.2;">
+<h2 style="font-size: 1.8rem; font-weight: 800; margin: 0; color: #ffffff; letter-spacing: -0.5px; line-height: 1.2; text-shadow: 0 2px 10px rgba(0,0,0,0.2);">
 Medical AI
 </h2>
-<div style="margin-top: 8px; display: inline-block; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 4px 12px; border-radius: 20px;">
-<p style="font-size: 0.75rem; font-weight: 700; color: #16a34a; text-transform: uppercase; letter-spacing: 1px; margin: 0;">
+<div style="margin-top: 10px; display: inline-block; background: rgba(52, 211, 153, 0.1); border: 1px solid rgba(52, 211, 153, 0.2); padding: 5px 14px; border-radius: 20px; backdrop-filter: blur(10px);">
+<p style="font-size: 0.75rem; font-weight: 700; color: #34d399; text-transform: uppercase; letter-spacing: 1.5px; margin: 0;">
 Clinical Assistant
 </p>
 </div>
@@ -299,22 +315,22 @@ Clinical Assistant
 
     st.sidebar.markdown(
         f"""
-        <div style="background: white; border-radius: 12px; padding: 15px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); margin-bottom: 10px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 10px;">
-                <span style="color: #64748b; font-size: 0.8rem; font-weight: 600;">📄 Docs Indexed</span>
-                <span style="color: #0ea5e9; font-weight: 800; font-size: 0.95rem;">{len(all_files)}</span>
+        <div style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 16px; padding: 18px; border: 1px solid rgba(255,255,255,0.8); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); margin-bottom: 10px; transition: transform 0.2s;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #cbd5e1; padding-bottom: 12px; margin-bottom: 12px;">
+                <span style="color: #475569; font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 8px;"><div style="width:24px; height:24px; background:linear-gradient(135deg, #38bdf8, #0ea5e9); border-radius:6px; display:flex; align-items:center; justify-content:center; color:white; font-size:12px;">📄</div> Docs Indexed</span>
+                <span style="color: #0f172a; font-weight: 900; font-size: 1.1rem;">{len(all_files)}</span>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 10px;">
-                <span style="color: #64748b; font-size: 0.8rem; font-weight: 600;">🔍 Top-K Match</span>
-                <span style="color: #0ea5e9; font-weight: 800; font-size: 0.95rem;">{TOP_K}</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #cbd5e1; padding-bottom: 12px; margin-bottom: 12px;">
+                <span style="color: #475569; font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 8px;"><div style="width:24px; height:24px; background:linear-gradient(135deg, #f43f5e, #e11d48); border-radius:6px; display:flex; align-items:center; justify-content:center; color:white; font-size:12px;">🔍</div> Top-K Match</span>
+                <span style="color: #0f172a; font-weight: 900; font-size: 1.1rem;">{TOP_K}</span>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 10px;">
-                <span style="color: #64748b; font-size: 0.8rem; font-weight: 600;">🧬 Embedding</span>
-                <span style="color: #8b5cf6; font-weight: 700; font-size: 0.7rem; background: #ede9fe; padding: 3px 8px; border-radius: 12px;">{EMBEDDING_MODEL}</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #cbd5e1; padding-bottom: 12px; margin-bottom: 12px;">
+                <span style="color: #475569; font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 8px;"><div style="width:24px; height:24px; background:linear-gradient(135deg, #a855f7, #7e22ce); border-radius:6px; display:flex; align-items:center; justify-content:center; color:white; font-size:12px;">🧬</div> Embedding</span>
+                <span style="color: #7e22ce; font-weight: 800; font-size: 0.75rem; background: rgba(168,85,247,0.1); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(168,85,247,0.2);">{EMBEDDING_MODEL}</span>
             </div>
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="color: #64748b; font-size: 0.8rem; font-weight: 600;">🧠 Core LLM</span>
-                <span style="color: #10b981; font-weight: 700; font-size: 0.7rem; background: #d1fae5; padding: 3px 8px; border-radius: 12px; max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{LLM_MODEL}">{LLM_MODEL}</span>
+                <span style="color: #475569; font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 8px;"><div style="width:24px; height:24px; background:linear-gradient(135deg, #10b981, #059669); border-radius:6px; display:flex; align-items:center; justify-content:center; color:white; font-size:12px;">🧠</div> Core LLM</span>
+                <span style="color: #059669; font-weight: 800; font-size: 0.75rem; background: rgba(16,185,129,0.1); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(16,185,129,0.2); max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{LLM_MODEL}">{LLM_MODEL}</span>
             </div>
         </div>
         """,
@@ -350,26 +366,26 @@ Clinical Assistant
 
     st.sidebar.markdown(
         f"""
-        <div style="background: white; border-radius: 12px; padding: 12px 15px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); margin-bottom: 10px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                <span style="color: #64748b; font-size: 0.8rem; font-weight: 600;">LLM Engine</span>
-                <div style="display: flex; align-items: center; gap: 6px;">
-                    <div style="width: 8px; height: 8px; border-radius: 50%; background-color: {llm_status_color}; box-shadow: 0 0 8px {llm_status_color};"></div>
-                    <span style="color: #334155; font-size: 0.8rem; font-weight: 700;">{llm_status_text}</span>
+        <div style="background: rgba(15, 23, 42, 0.95); border-radius: 16px; padding: 18px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2); margin-bottom: 10px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+                <span style="color: #94a3b8; font-size: 0.85rem; font-weight: 600;">LLM Engine</span>
+                <div style="display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.3); padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">
+                    <div style="width: 8px; height: 8px; border-radius: 50%; background-color: {llm_status_color}; box-shadow: 0 0 12px {llm_status_color};"></div>
+                    <span style="color: #f8fafc; font-size: 0.8rem; font-weight: 800;">{llm_status_text}</span>
                 </div>
             </div>
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                <span style="color: #64748b; font-size: 0.8rem; font-weight: 600;">Vector DB</span>
-                <div style="display: flex; align-items: center; gap: 6px;">
-                    <div style="width: 8px; height: 8px; border-radius: 50%; background-color: #10b981; box-shadow: 0 0 8px #10b981;"></div>
-                    <span style="color: #334155; font-size: 0.8rem; font-weight: 700;">ChromaDB Ready</span>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+                <span style="color: #94a3b8; font-size: 0.85rem; font-weight: 600;">Vector DB</span>
+                <div style="display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.3); padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">
+                    <div style="width: 8px; height: 8px; border-radius: 50%; background-color: #10b981; box-shadow: 0 0 12px #10b981;"></div>
+                    <span style="color: #f8fafc; font-size: 0.8rem; font-weight: 800;">ChromaDB Ready</span>
                 </div>
             </div>
             <div style="display: flex; align-items: center; justify-content: space-between;">
-                <span style="color: #64748b; font-size: 0.8rem; font-weight: 600;">RAG System</span>
-                <div style="display: flex; align-items: center; gap: 6px;">
-                    <div style="width: 8px; height: 8px; border-radius: 50%; background-color: #10b981; box-shadow: 0 0 8px #10b981;"></div>
-                    <span style="color: #334155; font-size: 0.8rem; font-weight: 700;">Retriever Loaded</span>
+                <span style="color: #94a3b8; font-size: 0.85rem; font-weight: 600;">RAG System</span>
+                <div style="display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.3); padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">
+                    <div style="width: 8px; height: 8px; border-radius: 50%; background-color: #38bdf8; box-shadow: 0 0 12px #38bdf8;"></div>
+                    <span style="color: #f8fafc; font-size: 0.8rem; font-weight: 800;">Retriever Loaded</span>
                 </div>
             </div>
         </div>
@@ -421,22 +437,23 @@ Clinical Assistant
 
     st.sidebar.markdown(
         """
-        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(14, 165, 233, 0.2);">
-            <p style="font-size: 0.9rem; font-weight: 700; color: #334155; margin-bottom: 2px;">
+        <div style="text-align: center; margin-top: 40px; padding: 25px 15px; border-radius: 16px; background: linear-gradient(135deg, #f8fafc, #f1f5f9); border: 1px solid #e2e8f0; box-shadow: inset 0 2px 4px rgba(255,255,255,0.5);">
+            <div style="width: 40px; height: 4px; background: linear-gradient(90deg, #0ea5e9, #4f46e5); border-radius: 2px; margin: 0 auto 15px auto;"></div>
+            <p style="font-size: 0.95rem; font-weight: 800; color: #0f172a; margin-bottom: 2px; letter-spacing: -0.2px;">
                 Designed by Ubaid Ashraf
             </p>
-            <p style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 20px;">
+            <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 20px; font-weight: 500;">
                 © 2026 All Rights Reserved
             </p>
-            <p style="font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">
+            <p style="font-size: 0.65rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px;">
                 Powered by
             </p>
-            <div style="display: flex; justify-content: center; gap: 6px; flex-wrap: wrap;">
-                <span style="font-size: 0.7rem; background: white; padding: 4px 10px; border-radius: 20px; color: #475569; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">Streamlit</span>
-                <span style="font-size: 0.7rem; background: white; padding: 4px 10px; border-radius: 20px; color: #475569; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">LangChain</span>
-                <span style="font-size: 0.7rem; background: white; padding: 4px 10px; border-radius: 20px; color: #475569; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">ChromaDB</span>
-                <span style="font-size: 0.7rem; background: white; padding: 4px 10px; border-radius: 20px; color: #475569; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">Ollama</span>
-                <span style="font-size: 0.7rem; background: white; padding: 4px 10px; border-radius: 20px; color: #475569; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">Groq</span>
+            <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
+                <span style="font-size: 0.7rem; background: white; padding: 5px 12px; border-radius: 20px; color: #334155; font-weight: 600; border: 1px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">Streamlit</span>
+                <span style="font-size: 0.7rem; background: white; padding: 5px 12px; border-radius: 20px; color: #334155; font-weight: 600; border: 1px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">LangChain</span>
+                <span style="font-size: 0.7rem; background: white; padding: 5px 12px; border-radius: 20px; color: #334155; font-weight: 600; border: 1px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">ChromaDB</span>
+                <span style="font-size: 0.7rem; background: white; padding: 5px 12px; border-radius: 20px; color: #334155; font-weight: 600; border: 1px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">Ollama</span>
+                <span style="font-size: 0.7rem; background: white; padding: 5px 12px; border-radius: 20px; color: #334155; font-weight: 600; border: 1px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">Groq</span>
             </div>
         </div>
         """,

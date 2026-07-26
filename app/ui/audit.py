@@ -9,15 +9,29 @@ def render_audit_dashboard():
     """
     st.markdown(
         """
-        <div class="card">
-        <h3 style="display: flex; align-items: center; gap: 10px;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            </svg>
-            HIPAA Audit & Security Logs
-        </h3>
-        <p style="color: #64748b; font-size: 0.95rem;">Tamper-proof record of system events, accesses, and emergency escalations.</p>
+        <div style="
+        background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%);
+        border-radius: 20px;
+        padding: 35px 30px;
+        color: white;
+        box-shadow: 0 20px 40px -10px rgba(225, 29, 72, 0.4);
+        margin-bottom: 25px;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.2);
+        ">
+        <div style="position: absolute; top: -50px; right: -50px; width: 250px; height: 250px; background: rgba(255,255,255,0.1); border-radius: 50%; filter: blur(30px); pointer-events: none;"></div>
+        <div style="position: absolute; bottom: -80px; left: 10%; width: 200px; height: 200px; background: rgba(255,255,255,0.15); border-radius: 50%; filter: blur(25px); pointer-events: none;"></div>
+
+        <div style="display: flex; align-items: center; gap: 25px; position: relative; z-index: 1;">
+        <div style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); width: 80px; height: 80px; border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.4);">
+        <span style="font-size: 40px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));">🔒</span>
+        </div>
+        <div>
+        <h2 style="margin: 0; font-size: 2.2rem; font-weight: 900; letter-spacing: -0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.15);">HIPAA Audit & Security Logs</h2>
+        <p style="margin: 8px 0 0 0; font-size: 1.1rem; opacity: 0.95; font-weight: 500; letter-spacing: 0.2px;">Tamper-proof record of system events, accesses, and emergency escalations.</p>
+        </div>
+        </div>
         </div>
         """,
         unsafe_allow_html=True,

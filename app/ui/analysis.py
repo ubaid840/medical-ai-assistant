@@ -17,7 +17,7 @@ def render_analysis():
     st.markdown(
         """
         <div class="card">
-        <h3>🩻 Medical Analysis & Dashboards</h3>
+        <h3>📊 Medical Analysis & Dashboards</h3>
         <p>Upload medical reports or medical images below, or view patient analytics.</p>
         </div>
         """,
@@ -28,39 +28,44 @@ def render_analysis():
     with st.expander("⚕️ Clinical Decision Support System (CDSS) - Risk Analytics", expanded=True):
         st.markdown("Enter patient vitals below to calculate real-time risk scores (e.g., Modified Early Warning Score - MEWS).")
         
-        col_v1, col_v2, col_v3, col_v4 = st.columns(4)
-        with col_v1:
+        col_row1_1, col_row1_2, col_row1_3 = st.columns(3)
+        with col_row1_1:
             hr = st.number_input("Heart Rate (bpm)", min_value=0, max_value=300, value=75)
-        with col_v2:
+        with col_row1_2:
             sys_bp = st.number_input("Systolic BP (mmHg)", min_value=0, max_value=300, value=120)
-        with col_v3:
+        with col_row1_3:
             resp_rate = st.number_input("Resp Rate (bpm)", min_value=0, max_value=60, value=16)
-        with col_v4:
+            
+        col_row2_1, col_row2_2 = st.columns(2)
+        with col_row2_1:
             temp = st.number_input("Temperature (°C)", min_value=20.0, max_value=45.0, value=37.0, step=0.1)
-
-        col_v5, col_v6 = st.columns(2)
-        with col_v5:
-            avpu = st.selectbox("Level of Consciousness (AVPU)", ["Alert", "Voice (Reacts to)", "Pain (Reacts to)", "Unresponsive"])
+        with col_row2_2:
+            avpu = st.selectbox("AVPU Scale", ["Alert", "Voice", "Pain", "Unresponsive"])
             
         mews_score = 0
         
-        # Calculate MEWS (Simplified)
-        if hr <= 40 or hr >= 130: mews_score += 3
+        # Calculate MEWS (Standard)
+        if hr >= 130: mews_score += 3
         elif hr >= 111: mews_score += 2
-        elif hr <= 50 or hr >= 101: mews_score += 1
+        elif hr >= 101: mews_score += 1
+        elif hr <= 40: mews_score += 2
+        elif hr <= 50: mews_score += 1
         
         if sys_bp <= 70: mews_score += 3
         elif sys_bp <= 80: mews_score += 2
-        elif sys_bp <= 100 or sys_bp >= 200: mews_score += 1
+        elif sys_bp <= 100: mews_score += 1
+        elif sys_bp >= 200: mews_score += 2
         
-        if resp_rate <= 8 or resp_rate >= 30: mews_score += 3
+        if resp_rate >= 30: mews_score += 3
         elif resp_rate >= 21: mews_score += 2
         elif resp_rate >= 15: mews_score += 1
+        elif resp_rate <= 8: mews_score += 2
         
-        if temp <= 35.0 or temp >= 38.5: mews_score += 2
+        if temp < 35.0 or temp >= 38.5: mews_score += 2
         
-        if avpu == "Unresponsive" or avpu == "Pain (Reacts to)": mews_score += 3
-        elif avpu == "Voice (Reacts to)": mews_score += 1
+        if avpu == "Unresponsive": mews_score += 3
+        elif avpu == "Pain": mews_score += 2
+        elif avpu == "Voice": mews_score += 1
         
         st.markdown("### Risk Assessment")
         if mews_score <= 2:
@@ -91,6 +96,8 @@ def render_analysis():
                 conn.close()
                 st.success("Vitals saved to patient history.")
 
+    st.markdown("<hr style='border: 1.5px solid #cbd5e1; margin: 25px 0;'>", unsafe_allow_html=True)
+
     # ---------------- Interactive Dashboard ---------------- #
     with st.expander("📈 View Patient Vitals Dashboard", expanded=False):
         active_patient_id = st.session_state.get("active_patient_id")
@@ -119,20 +126,22 @@ def render_analysis():
                     fig2.update_layout(plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)")
                     st.plotly_chart(fig2, use_container_width=True)
 
+    st.markdown("---")
+    st.markdown("### 📤 Upload Medical Data")
+    st.markdown(
+        """
+        <div style="font-size: 14px; color: gray; margin-bottom: 10px;">
+        <b>Supported Files:</b> 📄 PDF Reports &nbsp;|&nbsp; 🦴 X-Ray Images &nbsp;|&nbsp; 🧠 MRI Scans &nbsp;|&nbsp; 🩺 CT Scans &nbsp;|&nbsp; 🖼️ JPG / PNG Images
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+    
     uploaded_file = st.file_uploader(
         "Upload Medical Report or Image",
         type=["pdf", "png", "jpg", "jpeg"],
         key="medical_file",
         label_visibility="collapsed"
-    )
-
-    st.markdown(
-        """
-        <div style="font-size: 14px; color: gray; margin-bottom: 20px;">
-        <b>Supported Files:</b> 📄 PDF Reports &nbsp;|&nbsp; 🩻 X-Ray Images &nbsp;|&nbsp; 🧠 MRI Scans &nbsp;|&nbsp; 🩺 CT Scans &nbsp;|&nbsp; 🖼️ JPG / PNG Images
-        </div>
-        """,
-        unsafe_allow_html=True
     )
 
     if uploaded_file is None:
@@ -168,7 +177,7 @@ def render_analysis():
 
     else:
 
-        st.success("🩻 Medical Image Uploaded")
+        st.success("🦴 Medical Image Uploaded")
 
         scan_type = st.selectbox(
             "Select Scan Type for Analysis",

@@ -5,14 +5,29 @@ import plotly.graph_objects as go
 
 def render_wearables():
     st.markdown("""
-        <div style='background: white; padding: 25px 30px; border-radius: 16px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; margin-bottom: 20px;'>
-            <div style='display: flex; align-items: center; gap: 15px; margin-bottom: 8px;'>
-                <div style='background: linear-gradient(135deg, #dcfce7, #bbf7d0); color: #16a34a; padding: 10px; border-radius: 12px; box-shadow: inset 0 2px 4px rgba(255,255,255,0.5);'>
-                    <span style='font-size: 24px;'>⌚</span>
-                </div>
-                <h3 style='color: #0f172a; font-weight: 800; font-size: 1.7rem; margin: 0;'>Live Wearable Data Stream</h3>
-            </div>
-            <p style='color: #64748b; font-size: 1.1rem; margin-top: 5px; margin-bottom: 0;'>Mock Apple Watch / Fitbit telemetry data with real-time AI anomaly detection.</p>
+        <div style="
+        background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+        border-radius: 20px;
+        padding: 35px 30px;
+        color: white;
+        box-shadow: 0 20px 40px -10px rgba(16, 185, 129, 0.4);
+        margin-bottom: 25px;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.2);
+        ">
+        <div style="position: absolute; top: -50px; right: -50px; width: 250px; height: 250px; background: rgba(255,255,255,0.1); border-radius: 50%; filter: blur(30px); pointer-events: none;"></div>
+        <div style="position: absolute; bottom: -80px; left: 10%; width: 200px; height: 200px; background: rgba(255,255,255,0.15); border-radius: 50%; filter: blur(25px); pointer-events: none;"></div>
+
+        <div style="display: flex; align-items: center; gap: 25px; position: relative; z-index: 1;">
+        <div style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); width: 80px; height: 80px; border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.4);">
+        <span style="font-size: 40px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));">⌚</span>
+        </div>
+        <div>
+        <h2 style="margin: 0; font-size: 2.2rem; font-weight: 900; letter-spacing: -0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.15);">Live Wearable Data Stream</h2>
+        <p style="margin: 8px 0 0 0; font-size: 1.1rem; opacity: 0.95; font-weight: 500; letter-spacing: 0.2px;">Mock Apple Watch / Fitbit telemetry data with real-time AI anomaly detection.</p>
+        </div>
+        </div>
         </div>
     """, unsafe_allow_html=True)
     
@@ -25,7 +40,20 @@ def render_wearables():
     with col3:
         st.metric(label="Status", value="Normal Sinus Rhythm", delta="Stable")
         
-    st.markdown("### 🫀 Live ECG Feed")
+    st.markdown(
+        """
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; margin-top: 25px;">
+            <div style="background: linear-gradient(135deg, #ef4444, #b91c1c); color: white; width: 48px; height: 48px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 24px; box-shadow: 0 4px 10px rgba(239,68,68,0.3);">
+                🫀
+            </div>
+            <div>
+                <h3 style="margin: 0; font-weight: 800; color: #0f172a; font-size: 1.5rem; letter-spacing: -0.5px;">Live ECG Feed</h3>
+                <p style="margin: 2px 0 0 0; color: #64748b; font-size: 1rem;">Real-time continuous cardiac monitoring.</p>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
     
     if st.button("Start Live Stream", type="primary"):
         chart_placeholder = st.empty()

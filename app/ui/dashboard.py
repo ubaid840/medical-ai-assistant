@@ -6,14 +6,16 @@ from datetime import datetime, timedelta
 
 def render_dashboard():
     st.markdown("""
-        <div style='background: white; padding: 25px 30px; border-radius: 16px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; margin-bottom: 20px;'>
-            <div style='display: flex; align-items: center; gap: 15px; margin-bottom: 8px;'>
-                <div style='background: linear-gradient(135deg, #fce7f3, #fbcfe8); color: #be185d; padding: 10px; border-radius: 12px; box-shadow: inset 0 2px 4px rgba(255,255,255,0.5);'>
-                    <span style='font-size: 24px;'>📊</span>
+        <div style='background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 25px 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.8); margin-bottom: 25px;'>
+            <div style='display: flex; align-items: center; gap: 20px; margin-bottom: 10px;'>
+                <div style='background: linear-gradient(135deg, #f43f5e, #e11d48); padding: 15px; border-radius: 16px; box-shadow: 0 10px 20px rgba(244,63,94,0.3), inset 0 2px 4px rgba(255,255,255,0.3);'>
+                    <span style='font-size: 32px; color: white;'>📊</span>
                 </div>
-                <h3 style='color: #0f172a; font-weight: 800; font-size: 1.7rem; margin: 0;'>Longitudinal Vitals Dashboard</h3>
+                <div>
+                <h3 style='color: #0f172a; font-weight: 900; font-size: 2rem; margin: 0; letter-spacing: -0.5px;'>Longitudinal Vitals Dashboard</h3>
+                <p style='color: #475569; font-size: 1.15rem; font-weight: 600; margin-top: 5px; margin-bottom: 0;'>Interactive analysis of patient telemetry and historical vitals.</p>
+                </div>
             </div>
-            <p style='color: #64748b; font-size: 1.1rem; margin-top: 5px; margin-bottom: 0;'>Interactive analysis of patient telemetry and historical vitals.</p>
         </div>
     """, unsafe_allow_html=True)
 

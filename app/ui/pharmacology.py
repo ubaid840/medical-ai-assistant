@@ -61,18 +61,30 @@ border: 1px solid rgba(255,255,255,0.2);
         unsafe_allow_html=True,
     )
 
-    st.markdown("### Enter Medications")
-    st.write("Input the medications the patient is currently taking or considering.")
+    st.markdown(
+        """
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; margin-top: 10px;">
+            <div style="background: linear-gradient(135deg, #34d399, #10b981); color: white; width: 48px; height: 48px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 24px; box-shadow: 0 4px 10px rgba(16,185,129,0.3);">
+                📋
+            </div>
+            <div>
+                <h3 style="margin: 0; font-weight: 800; color: #0f172a; font-size: 1.5rem; letter-spacing: -0.5px;">Clinical Medication Review</h3>
+                <p style="margin: 2px 0 0 0; color: #64748b; font-size: 1rem;">Enter active or prospective medications to run a safety analysis.</p>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
     
     # Dynamic form for medications
-    with st.form("medication_form"):
+    with st.form("medication_form", border=True):
         med_input = st.text_area(
-            "Medications (one per line or comma separated)", 
-            placeholder="e.g. Aspirin 81mg, Lisinopril, Grapefruit Juice",
-            height=100
+            "Medications List", 
+            placeholder="e.g. Aspirin 81mg, Lisinopril 10mg, Grapefruit Juice...",
+            height=120
         )
         
-        submit = st.form_submit_button("Analyze Interactions 🧬", use_container_width=True)
+        submit = st.form_submit_button("🧬 Run Comprehensive Interaction Analysis", type="primary", use_container_width=True)
         
         if submit:
             if med_input.strip():

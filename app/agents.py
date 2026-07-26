@@ -165,7 +165,7 @@ def call_llm(prompt: str, temperature: float = 0.1, max_tokens: int = 700, priva
 
 def perform_web_search(query: str) -> str:
     try:
-        from duckduckgo_search import DDGS
+        from ddgs import DDGS
         logger.info(f"Performing web search for: {query}")
         results = DDGS().text(query, max_results=3)
         context = ""
