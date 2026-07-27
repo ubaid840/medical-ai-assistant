@@ -1,4 +1,3 @@
-import re
 
 def calculate_bmi(weight_kg, height_m):
     try:

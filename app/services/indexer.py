@@ -1,4 +1,3 @@
-from pathlib import Path
 import shutil
 
 from vector_store import build_vector_database

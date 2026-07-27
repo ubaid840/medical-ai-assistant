@@ -1,40 +1,12 @@
 import streamlit as st
-from datetime import datetime
 from agents import call_llm
+from ui.components import render_page_header
 
 def render_cbt_tab():
     """
     Digital CBT (Cognitive Behavioral Therapy) & Mood Journal UI
     """
-    st.markdown(
-        """
-        <div style="
-        background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%);
-        border-radius: 20px;
-        padding: 35px 30px;
-        color: white;
-        box-shadow: 0 20px 40px -10px rgba(168, 85, 247, 0.4);
-        margin-bottom: 25px;
-        position: relative;
-        overflow: hidden;
-        border: 1px solid rgba(255,255,255,0.2);
-        ">
-        <div style="position: absolute; top: -50px; right: -50px; width: 250px; height: 250px; background: rgba(255,255,255,0.1); border-radius: 50%; filter: blur(30px); pointer-events: none;"></div>
-        <div style="position: absolute; bottom: -80px; left: 10%; width: 200px; height: 200px; background: rgba(255,255,255,0.15); border-radius: 50%; filter: blur(25px); pointer-events: none;"></div>
-
-        <div style="display: flex; align-items: center; gap: 25px; position: relative; z-index: 1;">
-        <div style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); width: 80px; height: 80px; border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.4);">
-        <span style="font-size: 40px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));">🧠</span>
-        </div>
-        <div>
-        <h2 style="margin: 0; font-size: 2.2rem; font-weight: 900; letter-spacing: -0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.15);">Mental Wellness & Digital CBT</h2>
-        <p style="margin: 8px 0 0 0; font-size: 1.1rem; opacity: 0.95; font-weight: 500; letter-spacing: 0.2px;">Your judgment-free zone for cognitive behavioral exercises and mood tracking.</p>
-        </div>
-        </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    render_page_header("🧠", "Mental Wellness & Digital CBT", "Your judgment-free zone for cognitive behavioral exercises and mood tracking.", "linear-gradient(135deg, #a855f7, #7e22ce)")
 
     col1, col2 = st.columns([1, 1])
 

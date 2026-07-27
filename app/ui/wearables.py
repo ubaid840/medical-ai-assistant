@@ -84,6 +84,6 @@ def render_wearables():
                               margin=dict(l=0, r=0, t=0, b=0), height=250)
             
             chart_placeholder.plotly_chart(fig, use_container_width=True)
-            time.sleep(0.1)
+            time.sleep(0.01)
             
         st.success("✅ Stream complete. AI detected no severe arrhythmias during this segment.")

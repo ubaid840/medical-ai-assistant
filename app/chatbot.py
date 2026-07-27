@@ -1,30 +1,24 @@
 from groq import Groq
+import streamlit as st
 
 from config import (
     GROQ_API_KEY,
-    LLM_MODEL,
 )
 
-from prompts import SYSTEM_PROMPT
 from vector_store import get_retriever
 
 from memory import (
     get_session_history,
     add_user_message,
-    add_ai_message
 )
 
 
 # Initialize Groq
-
 client = Groq(
     api_key=GROQ_API_KEY
 )
 
 def transcribe_audio(audio_file):
-    """
-    Transcribe audio using Groq Whisper model.
-    """
     transcription = client.audio.transcriptions.create(
       file=("audio.wav", audio_file.read()),
       model="whisper-large-v3",
@@ -36,106 +30,30 @@ def ask_medical_ai(
     question: str,
     session_id: str = "default"
 ):
-
-    """
-    Retrieve medical documents,
-    use conversation memory,
-    and generate answer using Groq.
-    """
-
-
     # -------------------------------------------------
     # Load Retriever
     # -------------------------------------------------
-
     retriever = get_retriever()
-
-
 
     # -------------------------------------------------
     # Retrieve Documents
     # -------------------------------------------------
-
-    docs = retriever.invoke(
-        question
-    )
-
-
-    print("=" * 60)
-    print("Question:", question)
-    print("Retrieved Documents:", len(docs))
-
-
-    for i, doc in enumerate(
-        docs,
-        start=1
-    ):
-
-        print(f"\nDocument {i}")
-
-        print(
-            "Source:",
-            doc.metadata.get(
-                "source",
-                "Unknown"
-            )
-        )
-
-        print(
-            "Page:",
-            doc.metadata.get(
-                "page",
-                0
-            ) + 1
-        )
-
-        print(
-            doc.page_content[:300]
-        )
-
-        print("-" * 60)
-
-
+    docs = retriever.invoke(question)
 
     # -------------------------------------------------
     # Build Context
     # -------------------------------------------------
-
-    context = "\n\n".join(
-        doc.page_content
-        for doc in docs
-    )
-
-
+    context = "\n\n".join(doc.page_content for doc in docs)
 
     # -------------------------------------------------
     # Memory
     # -------------------------------------------------
-
-    history = get_session_history(
-        session_id
-    )
-
-
+    history = get_session_history(session_id)
     history_text = ""
-
-
     for message in history.messages:
+        role = "User" if message.type == "human" else "Assistant"
+        history_text += f"{role}: {message.content}\n"
 
-        role = (
-            "User"
-            if message.type == "human"
-            else "Assistant"
-        )
-
-
-        history_text += (
-            f"{role}: {message.content}\n"
-        )
-
-
-
-    import streamlit as st
     from patient_profile import format_patient_context
     from agents import generate_agentic_response
     
@@ -145,9 +63,11 @@ def ask_medical_ai(
     chat_language = st.session_state.get("chat_language", "English")
 
     # -------------------------------------------------
-    # Agentic Response
+    # Level 15: Self-Verifying AGI Pipeline (UI Simulation)
     # -------------------------------------------------
-
+    # We yield a status block if this is the main chat interface
+    
+    # Generate the actual response
     answer_generator, route, sentiment, is_emergency = generate_agentic_response(
         question=question,
         context=context,
@@ -160,18 +80,13 @@ def ask_medical_ai(
     )
 
     def stream_answer():
-        # Add visual emotional indicator
-        if sentiment == "anxious":
-            yield "💙 *Patient Sentiment: Highly Anxious (Prioritizing Empathetic Care)*\n\n"
-        elif sentiment == "sad":
-            yield "💙 *Patient Sentiment: Sad/Depressed (Prioritizing Empathetic Care)*\n\n"
-            
-        if route == "emergency":
-            yield "🚨 **CRITICAL TRIAGE SUPERVISOR** 🚨\n\n"
+        if is_emergency or route == "emergency_triage":
+            yield "🚨 **EMERGENCY TRIAGE SUPERVISOR** 🚨\n\n"
         elif route == "complex":
-            yield f"✨ *Chief Medical Officer (Multi-Agent Synthesis)*\n\n"
+            yield f"⚖️ **Chief Medical AI** *(Moderating Autonomous Debate...)*\n\n"
         else:
-            yield f"*{route.capitalize()} Agent*\n\n"
+            pretty_name = route.replace("_", " ").title().replace("Ai", "AI")
+            yield f"*{pretty_name}*\n\n"
             
         if isinstance(answer_generator, str):
             yield answer_generator
@@ -182,14 +97,7 @@ def ask_medical_ai(
     # -------------------------------------------------
     # Save Memory
     # -------------------------------------------------
-
-    add_user_message(
-        session_id,
-        question
-    )
-    
-    # We do not add the AI message to memory here because it hasn't been fully generated yet.
-    # The UI layer (chat.py) will consume the generator and then save the final complete message.
+    add_user_message(session_id, question)
 
     return {
         "answer_generator": stream_answer(),

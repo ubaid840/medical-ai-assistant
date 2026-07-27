@@ -1,4 +1,3 @@
-import sqlite3
 from database import get_connection
 
 def create_patient_profile(name, age, gender, chronic_conditions, allergies, medications):

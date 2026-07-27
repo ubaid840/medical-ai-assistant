@@ -30,16 +30,18 @@ def create_session(title="New Chat"):
 
 
 def get_all_sessions():
-    """Return all chat sessions."""
+    """Return all chat sessions with message counts."""
 
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute(
         """
-        SELECT *
-        FROM chat_sessions
-        ORDER BY created_at DESC
+        SELECT s.session_id, s.title, s.created_at, COUNT(h.id) as msg_count
+        FROM chat_sessions s
+        LEFT JOIN chat_history h ON s.session_id = h.session_id
+        GROUP BY s.session_id, s.title, s.created_at
+        ORDER BY s.created_at DESC
         """
     )
 

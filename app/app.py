@@ -28,7 +28,12 @@ from ui.pediatrics import render_pediatrics
 from ui.dashboard import render_dashboard
 from ui.imaging import render_imaging
 from ui.wearables import render_wearables
+from ui.prediction import render_prediction_dashboard
+from ui.advanced_diagnostics import render_advanced_diagnostics
+from ui.hospital import render_hospital
 from ui.research import render_research
+from ui.planetary import render_planetary_dashboard
+from ui.knowledge_graph import render_knowledge_graph
 
 
 # =====================================================
@@ -74,6 +79,8 @@ def load_css():
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 load_css()
+
+
 
 
 # =====================================================
@@ -202,21 +209,26 @@ div[data-testid="stTabs"] button[id^="tabs-bui"]:last-child {
 </style>
 """, unsafe_allow_html=True)
 
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13 = st.tabs(
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13, tab14, tab15, tab16, tab17, tab18 = st.tabs(
     [
-        "💬 Chat",
+        "🩺 Chat",
+        "｜ 🌍 Planetary",
+        "｜ 🕸️ Graph",
+        "｜ 🌌 UHDT-PCSE",
+        "｜ 🧪 Diagnostics",
+        "｜ 🏥 Hospital",
         "｜ 🔬 Analysis",
         "｜ 💊 Pharmacology",
         "｜ 🧠 Knowledge",
-        "｜ 📅 Intake",
-        "｜ 💊 Routines",
-        "｜ 🔒 Audit",
-        "｜ 🧘 Wellness",
+        "｜ 📋 Intake",
+        "｜ 💉 Routines",
+        "｜ ⚕️ Audit",
+        "｜ 🫁 Wellness",
         "｜ 👶 Pediatrics",
-        "｜ 📈 Dashboard",
-        "｜ 🦴 Imaging",
+        "｜ 🫀 Dashboard",
+        "｜ 🩻 Imaging",
         "｜ ⌚ Wearables",
-        "｜ 🔬 Research"
+        "｜ 🧫 Research"
     ]
 )
 
@@ -227,98 +239,55 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13
 # =====================================================
 
 with tab1:
-
-    render_chat(
-        session_id=st.session_state.session_id
-    )
-
-
-
-# =====================================================
-# ANALYSIS
-# =====================================================
+    render_chat(session_id=st.session_state.session_id)
 
 with tab2:
-
-    render_analysis()
-
-
-
-# =====================================================
-# PHARMACOLOGY
-# =====================================================
+    render_planetary_dashboard()
 
 with tab3:
-    render_pharmacology()
-
-# =====================================================
-# KNOWLEDGE BASE
-# =====================================================
+    render_knowledge_graph()
 
 with tab4:
-    render_knowledge_base()
-
-# =====================================================
-# OPERATIONS & INTAKE
-# =====================================================
+    render_prediction_dashboard()
 
 with tab5:
-    render_operations()
-
-# =====================================================
-# CARE ROUTINES
-# =====================================================
+    render_advanced_diagnostics()
 
 with tab6:
-    render_routines()
-
-# =====================================================
-# AUDIT & SECURITY
-# =====================================================
+    render_hospital()
 
 with tab7:
-    render_audit_dashboard()
-
-# =====================================================
-# MENTAL WELLNESS / CBT
-# =====================================================
+    render_analysis()
 
 with tab8:
-    render_cbt_tab()
-
-# =====================================================
-# PEDIATRICS
-# =====================================================
+    render_pharmacology()
 
 with tab9:
-    render_pediatrics()
-
-# =====================================================
-# DASHBOARD
-# =====================================================
+    render_knowledge_base()
 
 with tab10:
-    render_dashboard()
-
-# =====================================================
-# IMAGING
-# =====================================================
+    render_operations()
 
 with tab11:
-    render_imaging()
-
-# =====================================================
-# WEARABLES
-# =====================================================
+    render_routines()
 
 with tab12:
-    render_wearables()
-
-# =====================================================
-# RESEARCH
-# =====================================================
+    render_audit_dashboard()
 
 with tab13:
-    render_research()
+    render_cbt_tab()
 
-# Triggering reload 9
+with tab14:
+    render_pediatrics()
+
+with tab15:
+    render_dashboard()
+
+with tab16:
+    render_imaging()
+
+with tab17:
+    render_wearables()
+
+with tab18:
+    render_research()

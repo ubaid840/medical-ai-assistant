@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 from database import get_connection
-from datetime import datetime, timedelta
 
 def get_appointments(patient_id=None):
     conn = get_connection()

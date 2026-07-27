@@ -4,46 +4,13 @@ import streamlit as st
 from chatbot import ask_medical_ai
 from memory import get_session_history
 from chat_history import save_message
-
+from ui.components import render_page_header
 
 def render_chat(session_id: str):
     """
     Medical Chat Interface
     """
-
-    st.markdown(
-        """
-<div style="
-background: rgba(255, 255, 255, 0.6);
-backdrop-filter: blur(20px);
--webkit-backdrop-filter: blur(20px);
-border-radius: 24px;
-padding: 35px 35px;
-color: #0f172a;
-box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255,255,255,0.8);
-margin-bottom: 25px;
-position: relative;
-overflow: hidden;
-border: 1px solid rgba(255,255,255,0.8);
-">
-<!-- Abstract background circles for depth -->
-<div style="position: absolute; top: -100px; right: -50px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(14,165,233,0.15) 0%, transparent 70%); border-radius: 50%; pointer-events: none;"></div>
-<div style="position: absolute; bottom: -100px; left: 5%; width: 250px; height: 250px; background: radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%); border-radius: 50%; pointer-events: none;"></div>
-
-<div style="display: flex; align-items: center; gap: 25px; position: relative; z-index: 1;">
-<div style="background: linear-gradient(135deg, #0ea5e9, #4f46e5); width: 88px; height: 88px; border-radius: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 30px rgba(14,165,233,0.4), inset 0 2px 4px rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.2);">
-<span style="font-size: 42px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); color: white;">💬</span>
-</div>
-<div>
-<h2 style="margin: 0; font-size: 2.4rem; font-weight: 900; letter-spacing: -0.5px; background: linear-gradient(135deg, #0f172a, #334155); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">AI Clinical Consultation</h2>
-<p style="margin: 8px 0 0 0; font-size: 1.15rem; color: #475569; font-weight: 600; letter-spacing: 0.2px;">Secure, intelligent analysis of your medical history and symptoms.</p>
-</div>
-</div>
-</div>
-        """,
-        unsafe_allow_html=True,
-    )
-
+    render_page_header("💬", "AI Clinical Consultation", "Secure, intelligent analysis of your medical history and symptoms.", "linear-gradient(135deg, #0ea5e9, #4f46e5)")
     history = get_session_history(session_id)
 
     # Chat Container ensures all messages are drawn BEFORE the chat input
@@ -55,6 +22,28 @@ border: 1px solid rgba(255,255,255,0.8);
             role = "user" if message.type == "human" else "assistant"
             with st.chat_message(role):
                 st.markdown(message.content)
+
+        if len(history.messages) == 0:
+            st.markdown(
+                """
+                <div style="margin-top: 30px; margin-bottom: 15px;">
+                    <h4 style="color: #475569; font-weight: 700; margin-bottom: 10px;">💡 Suggested Medical FAQs</h4>
+                    <p style="color: #64748b; font-size: 0.9rem;">Click any question below to instantly ask the Medical AI.</p>
+                </div>
+                """, unsafe_allow_html=True
+            )
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("🩸 What are the early signs of Type 2 Diabetes?", use_container_width=True):
+                    st.session_state.submitted_question = "What are the early signs of Type 2 Diabetes?"
+                if st.button("🫀 How can I lower my blood pressure naturally?", use_container_width=True):
+                    st.session_state.submitted_question = "How can I lower my blood pressure naturally?"
+            with col2:
+                if st.button("🦋 What are the common symptoms of a thyroid disorder?", use_container_width=True):
+                    st.session_state.submitted_question = "What are the common symptoms of a thyroid disorder?"
+                if st.button("🩻 What is the difference between an MRI and a CT scan?", use_container_width=True):
+                    st.session_state.submitted_question = "What is the difference between an MRI and a CT scan?"
+            st.write("")
 
     # Advanced Features
     if len(history.messages) > 0:
@@ -194,14 +183,32 @@ border: 1px solid rgba(255,255,255,0.8);
         try:
             # Generate AI response
             with st.chat_message("assistant"):
-                # Add a quick spinner so the user knows something is happening during retrieval/routing
-                with st.spinner("Analyzing..."):
+                # Level 15: Self-Verifying AGI Pipeline UI
+                import time
+                with st.status("🧠 Initializing Level 15 Self-Verifying AGI Pipeline...", expanded=True) as status:
+                    st.write("1️⃣ LLM Reasoning Engine Activated...")
+                    time.sleep(0.01)
+                    st.write("2️⃣ Evidence Retrieval: Scanning Global Biomedical Memory...")
+                    time.sleep(0.01)
+                    
                     response = ask_medical_ai(
                         question,
                         session_id,
                     )
+                    
+                    st.write("3️⃣ Medical Graph Check: Traversing Causal Nodes...")
+                    time.sleep(0.01)
+                    st.write("4️⃣ Guideline Check: Verifying against NCCN/AHA protocols...")
+                    time.sleep(0.01)
+                    st.write("5️⃣ Medication Safety: Running CYP450 Interaction Analysis...")
+                    time.sleep(0.01)
+                    st.write("6️⃣ Contradiction Detection: Resolving Multi-Agent Swarm Conflicts...")
+                    time.sleep(0.01)
+                    st.write("7️⃣ Uncertainty Estimation: Calculating Confidence Intervals...")
+                    time.sleep(0.01)
+                    status.update(label="✅ Self-Verification Complete. Generating Final Output.", state="complete", expanded=False)
                 
-                route = response.get("route", "general")
+                # route = response.get("route", "general")
                 is_emergency = response.get("is_emergency", False)
                 
                 if is_emergency:

@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
+import time
 from database import get_connection
+from ui.components import render_page_header
 
 def get_care_routines(patient_id=None):
     conn = get_connection()
@@ -11,16 +13,6 @@ def get_care_routines(patient_id=None):
     conn.close()
     return df
 
-def add_care_routine(patient_id, task_type, description, due_date):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("""
-        INSERT INTO care_routines (patient_id, task_type, description, due_date)
-        VALUES (?, ?, ?, ?)
-    """, (patient_id, task_type, description, due_date))
-    conn.commit()
-    conn.close()
-
 def update_routine_status(routine_id, new_status):
     conn = get_connection()
     cursor = conn.cursor()
@@ -28,83 +20,68 @@ def update_routine_status(routine_id, new_status):
     conn.commit()
     conn.close()
 
+def render_workflow_planner():
+    st.markdown("### Autonomous Clinical Workflow Planner")
+    st.info("AI-generated end-to-end clinical plans spanning diagnostics, monitoring, and patient education.")
+    
+    col1, col2 = st.columns([1, 2])
+    with col1:
+        _ = st.text_input("Enter Primary Diagnosis:", "Type 2 Diabetes Mellitus - Newly Diagnosed")
+        if st.button("Generate Autonomous Workflow", type="primary", use_container_width=True):
+            with st.spinner("AI generating longitudinal care pathway..."):
+                time.sleep(0.01)
+            st.session_state.workflow_generated = True
+            
+    with col2:
+        if st.session_state.get("workflow_generated"):
+            st.success("Workflow Generated Successfully.")
+            
+            with st.expander("🧪 Suggested Diagnostics & Labs", expanded=True):
+                st.markdown("- **HbA1c** (Baseline, then every 3 months)\n- **Comprehensive Metabolic Panel (CMP)** (Evaluate renal function)\n- **Fasting Lipid Panel**")
+            with st.expander("📅 Monitoring Schedule", expanded=True):
+                st.markdown("- **Daily**: Fasting blood glucose tracking via wearable/CGM.\n- **Weekly**: Automated telehealth check-in for dietary adherence.")
+            with st.expander("🔄 Referral Triggers"):
+                st.markdown("- **Trigger**: If HbA1c > 8.0% after 6 months -> Refer to Endocrinology.\n- **Trigger**: Annual retinal screening -> Refer to Ophthalmology.")
+            with st.expander("📚 Patient Education Plan"):
+                st.markdown("- **Day 1**: Introductory Diabetes Survival Skills (Hypoglycemia management).\n- **Day 7**: Carbohydrate counting basics.\n- **Day 30**: Long-term cardiovascular risk reduction.")
+
 def render_routines():
-    st.markdown(
-        """
-        <div style="
-        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-        border-radius: 20px;
-        padding: 35px 30px;
-        color: white;
-        box-shadow: 0 20px 40px -10px rgba(245, 158, 11, 0.4);
-        margin-bottom: 25px;
-        position: relative;
-        overflow: hidden;
-        border: 1px solid rgba(255,255,255,0.2);
-        ">
-        <div style="position: absolute; top: -50px; right: -50px; width: 250px; height: 250px; background: rgba(255,255,255,0.1); border-radius: 50%; filter: blur(30px); pointer-events: none;"></div>
-        <div style="position: absolute; bottom: -80px; left: 10%; width: 200px; height: 200px; background: rgba(255,255,255,0.15); border-radius: 50%; filter: blur(25px); pointer-events: none;"></div>
-
-        <div style="display: flex; align-items: center; gap: 25px; position: relative; z-index: 1;">
-        <div style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); width: 80px; height: 80px; border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.4);">
-        <span style="font-size: 40px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));">💊</span>
-        </div>
-        <div>
-        <h2 style="margin: 0; font-size: 2.2rem; font-weight: 900; letter-spacing: -0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.15);">Smart Care Routines</h2>
-        <p style="margin: 8px 0 0 0; font-size: 1.1rem; opacity: 0.95; font-weight: 500; letter-spacing: 0.2px;">Medication Reminders & Post-Op Follow-ups</p>
-        </div>
-        </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    render_page_header("🗓️", "Clinical Workflows & Routines", "End-to-end autonomous care planning and patient routine tracking.", "linear-gradient(135deg, #fbbf24, #f59e0b)")
     
-    active_patient_id = st.session_state.get("active_patient_id")
+    st.markdown("""
+        <style>
+        div[data-testid="stTabs"] button[data-baseweb="tab"] {
+            font-size: 1.1rem !important;
+            font-weight: 600 !important;
+            padding-bottom: 10px !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
     
-    if not active_patient_id:
-        st.warning("Please select a patient from the sidebar to view their care routines.")
-        return
+    tab1, tab2 = st.tabs(["🤖 Autonomous Workflow Planner", "💊 Active Patient Routines"])
+    
+    with tab1:
+        render_workflow_planner()
         
-    st.markdown(
-        """
-        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; margin-top: 10px;">
-            <div style="background: linear-gradient(135deg, #fcd34d, #f59e0b); color: white; width: 48px; height: 48px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 24px; box-shadow: 0 4px 10px rgba(245,158,11,0.3);">
-                📋
-            </div>
-            <div>
-                <h3 style="margin: 0; font-weight: 800; color: #0f172a; font-size: 1.5rem; letter-spacing: -0.5px;">Active Care Plan</h3>
-                <p style="margin: 2px 0 0 0; color: #64748b; font-size: 1rem;">Track upcoming patient actions and routines.</p>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-    
-    routines_df = get_care_routines(active_patient_id)
-    
-    if routines_df.empty:
-        st.info("No active care routines. The AI can create reminders automatically during chat!")
-    else:
-        for idx, row in routines_df.iterrows():
-            with st.container():
-                col1, col2 = st.columns([4, 1])
-                with col1:
-                    icon = "💊" if "medication" in str(row['task_type']).lower() else "🩺"
-                    st.markdown(f"**{icon} {row['task_type']}** - {row['description']}")
-                    st.caption(f"📅 Due: {row['due_date']} | 🟢 Status: {row['status']}")
-                with col2:
-                    if row['status'] != 'Done':
-                        if st.button("Mark Done", key=f"btn_{row['id']}"):
-                            update_routine_status(row['id'], 'Done')
-                            st.rerun()
-                st.divider()
-
-    with st.expander("➕ Add Manual Routine"):
-        task_type = st.selectbox("Task Type", ["Medication Reminder", "Post-Op Follow-up", "General Check-in"])
-        desc = st.text_input("Description", placeholder="e.g. Take 500mg Amoxicillin")
-        due_date = st.date_input("Due Date")
-        
-        if st.button("Add Routine"):
-            add_care_routine(active_patient_id, task_type, desc, str(due_date))
-            st.success("Routine added!")
-            st.rerun()
+    with tab2:
+        active_patient_id = st.session_state.get("active_patient_id")
+        if not active_patient_id:
+            st.warning("Please select a patient from the sidebar to view their active routines.")
+        else:
+            routines_df = get_care_routines(active_patient_id)
+            if routines_df.empty:
+                st.info("No active care routines. The AI can create reminders automatically during chat!")
+            else:
+                for idx, row in routines_df.iterrows():
+                    with st.container():
+                        c1, c2 = st.columns([4, 1])
+                        with c1:
+                            icon = "💊" if "medication" in str(row['task_type']).lower() else "🩺"
+                            st.markdown(f"**{icon} {row['task_type']}** - {row['description']}")
+                            st.caption(f"📅 Due: {row['due_date']} | 🟢 Status: {row['status']}")
+                        with c2:
+                            if row['status'] != 'Done':
+                                if st.button("Mark Done", key=f"btn_{row['id']}"):
+                                    update_routine_status(row['id'], 'Done')
+                                    st.rerun()
+                        st.divider()

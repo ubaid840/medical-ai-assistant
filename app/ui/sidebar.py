@@ -1,7 +1,6 @@
 import streamlit as st
 import os
 import requests
-from streamlit_lottie import st_lottie
 
 def load_lottieurl(url: str):
     try:
@@ -163,7 +162,14 @@ Clinical Assistant
             st.button("🗑️ Delete", use_container_width=True, type="primary", disabled=True)
             
     if sessions:
-        session_opts = {s[0]: f"💬 {s[1]} ({s[2][:10]})" for s in sessions} 
+        # Filter out sessions with 0 messages, UNLESS it's the currently active session
+        valid_sessions = [s for s in sessions if s[3] > 0 or s[0] == st.session_state.session_id]
+        
+        # If somehow valid_sessions is empty but sessions isn't, fallback to just the first one
+        if not valid_sessions:
+            valid_sessions = [sessions[0]]
+            
+        session_opts = {s[0]: f"💬 {s[1]} ({s[2][:10]}) - {s[3]} msgs" for s in valid_sessions} 
         
         current_id = st.session_state.session_id
         session_ids = list(session_opts.keys())

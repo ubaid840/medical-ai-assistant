@@ -1,4 +1,3 @@
-from pathlib import Path
 import shutil
 
 from config import DATA_DIR, CHROMA_DB_DIR

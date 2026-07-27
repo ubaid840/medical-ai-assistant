@@ -1,0 +1,90 @@
+import os
+from pathlib import Path
+import sys
+
+# Add app directory to path so we can import vector_store
+sys.path.append(os.path.join(os.path.dirname(__file__), 'app'))
+
+from vector_store import add_document_to_db
+
+mnc_data = """
+# Global Pharmaceutical and Medical Device MNCs (2026 Intelligence Report)
+
+This document contains intelligence regarding the top Multinational Corporations (MNCs) in the healthcare, pharmaceutical, and medical device sectors.
+
+## 1. Pfizer Inc.
+* Headquarters: New York City, NY, USA
+* Focus Areas: Oncology, Immunology, Cardiology, Vaccines, Rare Diseases.
+* Key Blockbusters: Comirnaty (COVID-19), Eliquis (Apixaban), Prevnar, Ibrance (Palbociclib), Paxlovid.
+* Current Pipeline Focus: Next-generation mRNA vaccines for oncology, oral GLP-1 agonists for weight loss (Danuglipron), and targeted gene therapies for Duchenne muscular dystrophy.
+* Recent Acquisitions: Seagen (massive expansion into antibody-drug conjugates for oncology).
+
+## 2. Johnson & Johnson (J&J)
+* Headquarters: New Brunswick, NJ, USA
+* Focus Areas: Innovative Medicine (Oncology, Immunology, Neuroscience) and MedTech (Orthopaedics, Surgery, Vision).
+* Key Blockbusters: Darzalex (Daratumumab), Stelara (Ustekinumab), Tremfya (Guselkumab).
+* Current Pipeline Focus: CAR-T therapies (Carvykti) for multiple myeloma, precision robotics in MedTech (Ottava surgical robot), and targeted neuroscience therapeutics for treatment-resistant depression.
+* Corporate Restructuring: Spun off its consumer health division (Kenvue) to focus purely on high-margin Pharma and MedTech.
+
+## 3. F. Hoffmann-La Roche AG (Roche)
+* Headquarters: Basel, Switzerland
+* Focus Areas: Oncology, Neuroscience, Ophthalmology, In Vitro Diagnostics.
+* Key Blockbusters: Ocrevus (Ocrelizumab), Hemlibra (Emicizumab), Tecentriq (Atezolizumab), Perjeta (Pertuzumab).
+* Current Pipeline Focus: Alzheimer's disease monoclonal antibodies, personalized healthcare diagnostics, and advanced biomarker testing through their Foundation Medicine subsidiary.
+* Market Position: Global leader in in-vitro diagnostics and tissue-based cancer diagnostics.
+
+## 4. Novartis AG
+* Headquarters: Basel, Switzerland
+* Focus Areas: Cardiovascular, Renal & Metabolism, Immunology, Neuroscience, Oncology.
+* Key Blockbusters: Entresto (Sacubitril/Valsartan), Cosentyx (Secukinumab), Kesimpta (Ofatumumab), Zolgensma (Gene Therapy).
+* Current Pipeline Focus: Radioligand therapy (Pluvicto for prostate cancer), siRNA therapies (Leqvio for cholesterol), and advanced gene therapies.
+* Corporate Strategy: Completed the spin-off of Sandoz (generics division) to become a pure-play innovative medicines company.
+
+## 5. Merck & Co., Inc. (MSD outside US/Canada)
+* Headquarters: Rahway, NJ, USA
+* Focus Areas: Oncology, Vaccines, Infectious Diseases, Cardio-Metabolic.
+* Key Blockbusters: Keytruda (Pembrolizumab) - the world's top-selling drug, Gardasil (HPV Vaccine), Januvia.
+* Current Pipeline Focus: Exploring Keytruda combinations for earlier stages of cancer, developing novel pneumococcal vaccines, and entering the immunology space via the Prometheus Biosciences acquisition (TL1A inhibitors).
+* Market Position: Dominates the immuno-oncology market.
+
+## 6. Medtronic plc
+* Headquarters: Dublin, Ireland (Operational HQ in Minneapolis, MN, USA)
+* Focus Areas: Cardiovascular Portfolios, Medical Surgical, Neuroscience, Diabetes.
+* Key Products: Micra (leadless pacemakers), Hugo RAS (Robotic-Assisted Surgery), MiniMed insulin pump systems.
+* Current Pipeline Focus: Closed-loop artificial pancreas systems, AI-driven endoscopic modules (GI Genius), and advanced renal denervation systems (Symplicity Spyral).
+* Market Position: The world's largest standalone medical device company.
+
+## 7. Novo Nordisk A/S
+* Headquarters: Bagsværd, Denmark
+* Focus Areas: Diabetes Care, Obesity Care, Rare Blood Disorders.
+* Key Blockbusters: Ozempic (Semaglutide), Wegovy (Semaglutide for obesity), Rybelsus (Oral Semaglutide).
+* Current Pipeline Focus: Next-generation incretins (CagriSema), cardiovascular outcome trials for obesity drugs, and expanding into NASH (non-alcoholic steatohepatitis) treatments.
+* Market Position: The undisputed global leader in GLP-1 therapies and metabolic diseases, recently becoming Europe's most valuable company by market cap.
+
+## 8. AstraZeneca plc
+* Headquarters: Cambridge, UK
+* Focus Areas: Oncology, Cardiovascular, Renal & Metabolism (CVRM), Respiratory & Immunology, Rare Diseases.
+* Key Blockbusters: Tagrisso (Osimertinib), Farxiga (Dapagliflozin), Imfinzi (Durvalumab), Enhertu (Trastuzumab deruxtecan).
+* Current Pipeline Focus: Antibody-drug conjugates (ADCs), expanding Farxiga indications, and rare diseases via the Alexion acquisition.
+"""
+
+def ingest_data():
+    data_dir = Path(os.path.dirname(__file__)) / 'app' / 'data'
+    data_dir.mkdir(exist_ok=True, parents=True)
+    
+    file_path = data_dir / 'top_medical_mncs.txt'
+    
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(mnc_data)
+        
+    print(f"Generated {file_path}")
+    
+    print("Ingesting into ChromaDB...")
+    try:
+        add_document_to_db(str(file_path))
+        print("Successfully ingested Top Medical MNCs intelligence into the chatbot's knowledge base!")
+    except Exception as e:
+        print(f"Error during ingestion: {e}")
+
+if __name__ == "__main__":
+    ingest_data()

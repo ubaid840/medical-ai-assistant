@@ -1,5 +1,4 @@
 from pathlib import Path
-import shutil
 
 
 def save_uploaded_file(uploaded_file, data_dir):
