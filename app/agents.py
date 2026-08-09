@@ -79,7 +79,7 @@ Reason:
 ✓ Symptom 1 matches
 ✓ Risk factor X matches
 
-CRITICAL ANTI-HALLUCINATION RULE: Use ONLY provided context and general, well-established medical knowledge.
+CRITICAL ANTI-HALLUCINATION RULE: If a term is unrecognized, check if it is a likely typo for a known medical term. If it is a typo, state the assumption and proceed with the correct term. If completely unrecognized, politely state that you do not recognize it. Use ONLY provided context or general, well-established medical knowledge.
 
 {patient_context}
 
@@ -96,7 +96,7 @@ Current Question:
 SPECIALIST_TEMPLATE = """You are a highly specialized {specialty} AI Agent.
 Focus on providing safe, accurate, evidence-based information regarding {focus}.
 
-CRITICAL ANTI-HALLUCINATION RULE: If a term is unrecognized, politely state that you do not recognize it.
+CRITICAL ANTI-HALLUCINATION RULE: If a term is unrecognized, check if it is a likely typo for a known medical term. If it is a typo, state the assumption and proceed with the correct term. If completely unrecognized, politely state that you do not recognize it. Use ONLY provided context or general, well-established medical knowledge.
 
 {patient_context}
 
@@ -121,17 +121,22 @@ Agent Assessments:
 Question: {question}
 
 IMPORTANT: You are the Clinical Uncertainty Engine (Feature 29). Do NOT provide a single definitive answer. 
+CRITICAL ADVANCED RAG INSTRUCTION: You MUST explicitly ground your response in the provided Medical Context. Cite "Verified Medical Encyclopedias and Clinical Guidelines" when detailing your evidence. DO NOT hallucinate statistics or treatments not present in the medical consensus.
+
 You MUST format your final output using exactly these sections:
 
 ### 🏆 Diagnostic Tournament Consensus
 [Synthesize the debate and consensus]
+
+### 📚 Verified RAG Sources
+[Explicitly list the clinical guidelines or medical encyclopedias referenced in the context]
 
 ### 📊 Ranked Possibilities
 1. [Condition A] - [Confidence: High/Medium/Low]
 2. [Condition B] - [Confidence: High/Medium/Low]
 
 ### 🔬 Supporting Evidence
-[List evidence supporting the ranked options based on agent input]
+[List evidence supporting the ranked options based on agent input and RAG context]
 
 ### ❓ Missing Information
 [List 2-3 pieces of missing data/tests that would drastically improve confidence]
@@ -224,6 +229,8 @@ class AgentState(TypedDict):
     language: str
     stream: bool
     is_emergency: bool
+    triage_score: int
+    compliance_region: str
     
     route: str
     routes: List[str]
@@ -248,8 +255,19 @@ def router_node(state: AgentState):
         elif line.upper().startswith("SENTIMENT:"):
             sentiment = line.split(":", 1)[1].strip().lower()
             
-    emergency_keywords = ["suicide", "kill myself", "chest pain", "heart attack", "can't breathe", "heavy bleeding"]
-    if any(k in state["question"].lower() for k in emergency_keywords):
+    # Automated Clinical Triage: Dynamic Severity Scoring
+    triage_score = 1 # Default
+    question_lower = state["question"].lower()
+    
+    mild_keywords = ["headache", "cough", "rash", "tired"]
+    mod_keywords = ["fever", "vomiting", "dizzy", "pain"]
+    severe_keywords = ["suicide", "kill myself", "chest pain", "heart attack", "can't breathe", "heavy bleeding", "stroke", "unconscious"]
+    
+    if any(k in question_lower for k in mild_keywords): triage_score = max(triage_score, 3)
+    if any(k in question_lower for k in mod_keywords): triage_score = max(triage_score, 6)
+    if any(k in question_lower for k in severe_keywords): triage_score = 9
+    
+    if triage_score >= 7:
         routes = ["emergency_triage"]
         sentiment = "anxious"
     
@@ -272,7 +290,7 @@ def router_node(state: AgentState):
     if not filtered_routes:
         filtered_routes = ["physician_ai"]
         
-    return {"route": "complex" if len(filtered_routes) > 1 else filtered_routes[0], "routes": filtered_routes, "sentiment": sentiment, "agent_responses": {}, "debate_summary": ""}
+    return {"route": "complex" if len(filtered_routes) > 1 else filtered_routes[0], "routes": filtered_routes, "sentiment": sentiment, "agent_responses": {}, "debate_summary": "", "triage_score": triage_score}
 
 def calculator_node(state: AgentState):
     from medical_calculator import calculate_bmi, calculate_map, calculate_egfr
@@ -368,6 +386,9 @@ def generation_node(state: AgentState):
     if state["language"].lower() != "english":
         final_prompt += f"\n\nCRITICAL: Strictly translate and provide your final response entirely in {state['language']}. Keep formatting."
         
+    compliance = state.get("compliance_region", "US (FDA / HIPAA)")
+    final_prompt += f"\n\nCOMPLIANCE DIRECTIVE: You MUST strictly adhere to the medical protocols, approved drug formularies, and privacy laws of this region: {compliance}. Do not recommend drugs or procedures unapproved in this region."
+        
     if "diagnostician" in state["routes"] or len(state["routes"]) > 1:
         answer = call_llm(final_prompt, temperature=0.1, max_tokens=1000, privacy_mode=state["privacy_mode"], stream=state["stream"], override_model="llama-3.3-70b-versatile")
     else:
@@ -420,7 +441,7 @@ builder.add_edge("emergency_triage", END)
 medical_graph = builder.compile()
 
 
-def generate_agentic_response(question: str, context: str, history_text: str, patient_context: str = "", patient_id: Optional[int] = None, privacy_mode: bool = False, language: str = "English", stream: bool = False) -> Tuple[Union[str, Generator[str, None, None]], str, str, bool]:
+def generate_agentic_response(question: str, context: str, history_text: str, patient_context: str = "", patient_id: Optional[int] = None, privacy_mode: bool = False, language: str = "English", compliance_region: str = "US (FDA / HIPAA)", stream: bool = False) -> Tuple[Union[str, Generator[str, None, None]], str, str, bool, int]:
     
     safe_question = PrivacyManager.mask_phi(question)
     safe_history = PrivacyManager.mask_phi(history_text)
@@ -433,19 +454,22 @@ def generate_agentic_response(question: str, context: str, history_text: str, pa
         patient_id=patient_id,
         privacy_mode=privacy_mode,
         language=language,
+        compliance_region=compliance_region,
         stream=stream,
         is_emergency=False,
+        triage_score=1,
         route="general",
         routes=[],
         sentiment="neutral",
         agent_responses={},
+        debate_summary="",
         final_prompt="",
         final_generator=None
     )
     
     result_state = medical_graph.invoke(initial_state)
     
-    return result_state["final_generator"], result_state["route"], result_state.get("sentiment", "neutral"), result_state.get("is_emergency", False)
+    return result_state["final_generator"], result_state["route"], result_state.get("sentiment", "neutral"), result_state.get("is_emergency", False), result_state.get("triage_score", 1)
 
 def generate_soap_note(history_text: str, patient_context: str = "", privacy_mode: bool = False) -> str:
     soap_prompt = f"""You are a medical scribe. Based on the following patient conversation, generate a professional clinical SOAP note.

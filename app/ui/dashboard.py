@@ -155,7 +155,7 @@ def render_dashboard():
             )
             
             # Ensure the chart updates immediately without waiting for user interaction by providing a changing key
-            st.plotly_chart(fig, use_container_width=True, key=f"icu_chart")
+            st.plotly_chart(fig, use_container_width=True, key="icu_chart")
 
         # Sleep and Rerun Loop
         time.sleep(0.01)

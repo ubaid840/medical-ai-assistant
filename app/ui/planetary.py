@@ -58,6 +58,45 @@ def render_planetary_intelligence():
             
             st.warning(f"🚨 **Global Alert Triggered:** Simulated forecast indicates high probability of trans-continental spread originating from Southeast Asia within 14 days due to elevated mobility index ({mobility}).")
 
+    st.markdown("---")
+    st.markdown("### 🏘️ Local Environmental Context & Outbreak Alerts")
+    st.info("Simulated hyper-local environmental triggers and neighborhood outbreak surveillance.")
+    
+    col3, col4, col5 = st.columns(3)
+    
+    with col3:
+        st.markdown(f"""
+        <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center;">
+            <div style="font-size: 3rem; margin-bottom: 10px;">🌫️</div>
+            <h4 style="margin: 0; color: #475569;">Air Quality Index (AQI)</h4>
+            <h2 style="margin: 5px 0; color: #f59e0b; font-size: 2.5rem;">142</h2>
+            <p style="margin: 0; color: #b45309; font-weight: bold;">Unhealthy for Sensitive Groups</p>
+            <p style="margin-top: 10px; font-size: 0.85rem; color: #64748b;">⚠️ Asthma alert triggered. Recommend indoor activities.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+    with col4:
+        st.markdown(f"""
+        <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center;">
+            <div style="font-size: 3rem; margin-bottom: 10px;">🌼</div>
+            <h4 style="margin: 0; color: #475569;">Pollen Count</h4>
+            <h2 style="margin: 5px 0; color: #ef4444; font-size: 2.5rem;">High</h2>
+            <p style="margin: 0; color: #b91c1c; font-weight: bold;">Oak & Ragweed Predominant</p>
+            <p style="margin-top: 10px; font-size: 0.85rem; color: #64748b;">⚠️ High allergy risk. Pre-medicate with antihistamines.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+    with col5:
+        st.markdown(f"""
+        <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; border-top: 4px solid #ef4444;">
+            <div style="font-size: 3rem; margin-bottom: 10px;">🦟</div>
+            <h4 style="margin: 0; color: #475569;">Neighborhood Alert</h4>
+            <h2 style="margin: 5px 0; color: #ef4444; font-size: 1.8rem;">Dengue Spike</h2>
+            <p style="margin: 0; color: #b91c1c; font-weight: bold;">+312% cases in your zip code</p>
+            <p style="margin-top: 10px; font-size: 0.85rem; color: #64748b;">⚠️ Monitor for high fever and joint pain.</p>
+        </div>
+        """, unsafe_allow_html=True)
+
 def render_clinical_universe():
     st.markdown("### Clinical Universe Simulator")
     st.info("A synthetic environment containing 1 million virtual patients with varied demographics and diseases for evaluating algorithms.")

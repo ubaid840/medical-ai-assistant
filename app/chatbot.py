@@ -60,7 +60,8 @@ def ask_medical_ai(
     active_patient_id = st.session_state.get("active_patient_id")
     patient_context = format_patient_context(active_patient_id) if active_patient_id else ""
     privacy_mode = st.session_state.get("privacy_mode", False)
-    chat_language = st.session_state.get("chat_language", "English")
+    chat_language = st.session_state.get("chat_language", "English (US)")
+    compliance_region = st.session_state.get("compliance_region", "US (FDA / HIPAA)")
 
     # -------------------------------------------------
     # Level 15: Self-Verifying AGI Pipeline (UI Simulation)
@@ -68,7 +69,7 @@ def ask_medical_ai(
     # We yield a status block if this is the main chat interface
     
     # Generate the actual response
-    answer_generator, route, sentiment, is_emergency = generate_agentic_response(
+    answer_generator, route, sentiment, is_emergency, triage_score = generate_agentic_response(
         question=question,
         context=context,
         history_text=history_text,
@@ -76,6 +77,7 @@ def ask_medical_ai(
         patient_id=active_patient_id,
         privacy_mode=privacy_mode,
         language=chat_language,
+        compliance_region=compliance_region,
         stream=True
     )
 
@@ -83,7 +85,7 @@ def ask_medical_ai(
         if is_emergency or route == "emergency_triage":
             yield "🚨 **EMERGENCY TRIAGE SUPERVISOR** 🚨\n\n"
         elif route == "complex":
-            yield f"⚖️ **Chief Medical AI** *(Moderating Autonomous Debate...)*\n\n"
+            yield "⚖️ **Chief Medical AI** *(Moderating Autonomous Debate...)*\n\n"
         else:
             pretty_name = route.replace("_", " ").title().replace("Ai", "AI")
             yield f"*{pretty_name}*\n\n"
@@ -104,5 +106,6 @@ def ask_medical_ai(
         "sources": docs,
         "route": route,
         "sentiment": sentiment,
-        "is_emergency": is_emergency
+        "is_emergency": is_emergency,
+        "triage_score": triage_score
     }

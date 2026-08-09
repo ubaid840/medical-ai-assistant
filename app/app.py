@@ -34,7 +34,13 @@ from ui.hospital import render_hospital
 from ui.research import render_research
 from ui.planetary import render_planetary_dashboard
 from ui.knowledge_graph import render_knowledge_graph
-
+from ui.aiims_network import render_aiims_network
+from ui.voice_scribe import render_voice_scribe
+from ui.lab_ocr import render_lab_ocr
+from ui.surgical_sim import render_surgical_sim
+from ui.outbreak_sim import render_outbreak_sim
+from ui.bci import render_bci_dashboard
+from ui.nanobots import render_nanobot_controller
 
 # =====================================================
 # PAGE CONFIG
@@ -120,11 +126,6 @@ border: 1px solid rgba(255, 255, 255, 0.8);
         <path class="ekg-line" d="M0,100 L250,100 L270,70 L290,140 L320,30 L350,170 L370,80 L390,100 L700,100 L720,70 L740,140 L770,30 L800,170 L820,80 L840,100 L1000,100" fill="none" stroke="#0ea5e9" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
 
-<!-- Medical Plus Symbols -->
-<div style="position: absolute; top: 30px; left: 30px; color: #ef4444; font-size: 2.5rem; font-weight: bold; line-height: 1; opacity: 0.4; z-index: 1;">+</div>
-<div style="position: absolute; top: 30px; right: 30px; color: #ef4444; font-size: 2.5rem; font-weight: bold; line-height: 1; opacity: 0.4; z-index: 1;">+</div>
-<div style="position: absolute; bottom: 30px; left: 40px; color: #ef4444; font-size: 1.5rem; font-weight: bold; line-height: 1; opacity: 0.4; z-index: 1;">+</div>
-
 <div style="position: relative; z-index: 1;">
 <div style="position: relative; display: inline-flex; justify-content: center; align-items: center; margin-bottom: 1.8rem;">
 <div style="position: absolute; width: 140px; height: 140px; background: radial-gradient(circle, rgba(14,165,233,0.2) 0%, rgba(255,255,255,0) 70%); border-radius: 50%;"></div>
@@ -149,6 +150,45 @@ Advanced Clinical Intelligence & Diagnostic Analysis
     """,
     unsafe_allow_html=True
 )
+
+if st.session_state.get("privacy_mode", False):
+    st.markdown("""
+        <div style="background-color: #ecfdf5; border: 1px solid #10b981; color: #065f46; padding: 12px; border-radius: 12px; margin-bottom: 25px; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 6px rgba(16,185,129,0.1);">
+            <span style="font-size: 22px;">🔒</span>
+            <span style="font-weight: 700; font-size: 1.05rem;">HIPAA Compliant / Zero-Trust Active: All Protected Health Information (PHI) is automatically masked and processed locally.</span>
+        </div>
+    """, unsafe_allow_html=True)
+
+if st.session_state.get("elderly_mode", False):
+    st.markdown("""
+        <style>
+        /* Elderly Accessibility Mode: High Contrast & Large Text */
+        html, body, p, span, div, li, a, h1, h2, h3, h4, h5, h6 {
+            font-size: 1.25rem !important; /* Base scale up */
+            color: #000000 !important; /* Max contrast */
+        }
+        [data-testid="stSidebar"] {
+            background-color: #ffffff !important;
+            border-right: 3px solid #000000 !important;
+        }
+        .stButton>button {
+            border: 2px solid #000000 !important;
+            font-weight: 900 !important;
+            color: #000000 !important;
+            background-color: #fde047 !important; /* High contrast yellow */
+        }
+        .stButton>button:hover {
+            background-color: #000000 !important;
+            color: #fde047 !important;
+        }
+        /* Make inputs more visible */
+        input, textarea, select {
+            border: 2px solid #000000 !important;
+            background-color: #ffffff !important;
+            color: #000000 !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
 
 
 
@@ -182,112 +222,60 @@ show_disclaimer()
 
 
 # =====================================================
-# TABS
+# NAVIGATION ROUTING
 # =====================================================
 
 st.divider()
 
-st.markdown("""
-<style>
-/* Aggressive CSS to add vertical bars between tabs */
-div[data-testid="stTabs"] button[data-baseweb="tab"] {
-    border-right: 2px solid #cbd5e1 !important;
-    border-radius: 0px !important;
-    margin-right: 0px !important;
-}
-div[data-testid="stTabs"] button[data-baseweb="tab"]:last-child {
-    border-right: none !important;
-}
-/* For newer Streamlit versions */
-div[data-testid="stTabs"] button[id^="tabs-bui"] {
-    border-right: 2px solid #cbd5e1 !important;
-    border-radius: 0px !important;
-}
-div[data-testid="stTabs"] button[id^="tabs-bui"]:last-child {
-    border-right: none !important;
-}
-</style>
-""", unsafe_allow_html=True)
+selected_page = st.session_state.get("selected_page", "🩺 Chat")
 
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13, tab14, tab15, tab16, tab17, tab18 = st.tabs(
-    [
-        "🩺 Chat",
-        "｜ 🌍 Planetary",
-        "｜ 🕸️ Graph",
-        "｜ 🌌 UHDT-PCSE",
-        "｜ 🧪 Diagnostics",
-        "｜ 🏥 Hospital",
-        "｜ 🔬 Analysis",
-        "｜ 💊 Pharmacology",
-        "｜ 🧠 Knowledge",
-        "｜ 📋 Intake",
-        "｜ 💉 Routines",
-        "｜ ⚕️ Audit",
-        "｜ 🫁 Wellness",
-        "｜ 👶 Pediatrics",
-        "｜ 🫀 Dashboard",
-        "｜ 🩻 Imaging",
-        "｜ ⌚ Wearables",
-        "｜ 🧫 Research"
-    ]
-)
-
-
-
-# =====================================================
-# CHAT
-# =====================================================
-
-with tab1:
+if selected_page == "🩺 Chat":
     render_chat(session_id=st.session_state.session_id)
-
-with tab2:
+elif selected_page == "🏥 AIIMS":
+    render_aiims_network()
+elif selected_page == "🌍 Planetary":
     render_planetary_dashboard()
-
-with tab3:
+elif selected_page == "🕸️ Graph":
     render_knowledge_graph()
-
-with tab4:
+elif selected_page == "🌌 UHDT-PCSE":
     render_prediction_dashboard()
-
-with tab5:
+elif selected_page == "🧪 Diagnostics":
     render_advanced_diagnostics()
-
-with tab6:
+elif selected_page == "🏥 Hospital":
     render_hospital()
-
-with tab7:
+elif selected_page == "🔬 Analysis":
     render_analysis()
-
-with tab8:
+elif selected_page == "💊 Pharmacology":
     render_pharmacology()
-
-with tab9:
+elif selected_page == "🧠 Knowledge":
     render_knowledge_base()
-
-with tab10:
+elif selected_page == "📋 Intake":
     render_operations()
-
-with tab11:
+elif selected_page == "💉 Routines":
     render_routines()
-
-with tab12:
+elif selected_page == "⚕️ Audit":
     render_audit_dashboard()
-
-with tab13:
+elif selected_page == "🫁 Wellness":
     render_cbt_tab()
-
-with tab14:
+elif selected_page == "👶 Pediatrics":
     render_pediatrics()
-
-with tab15:
+elif selected_page == "🫀 Dashboard":
     render_dashboard()
-
-with tab16:
+elif selected_page == "🩻 Imaging":
     render_imaging()
-
-with tab17:
+elif selected_page == "⌚ Wearables":
     render_wearables()
-
-with tab18:
-    render_research()
+elif selected_page == "🧫 Research":
+    render_research()
+elif selected_page == "🎙️ Voice Scribe":
+    render_voice_scribe()
+elif selected_page == "📄 Lab OCR":
+    render_lab_ocr()
+elif selected_page == "🔪 Surgical Sim":
+    render_surgical_sim()
+elif selected_page == "🦠 Outbreak Sim":
+    render_outbreak_sim()
+elif selected_page == "🧠 Neural BCI":
+    render_bci_dashboard()
+elif selected_page == "🦠 Nanobots":
+    render_nanobot_controller()

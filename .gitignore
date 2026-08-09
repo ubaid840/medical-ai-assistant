@@ -14,3 +14,7 @@ chroma_db/
 
 # Environment variables
 .env
+
+# Logs and DB
+*.log
+*.db

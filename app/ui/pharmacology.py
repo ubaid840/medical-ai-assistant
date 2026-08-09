@@ -149,9 +149,9 @@ def render_quantum_simulation():
             )
             st.plotly_chart(fig, use_container_width=True)
             
-            st.markdown(f"**Predicted Binding Energy:** `-9.4 kcal/mol` (Highly Stable)")
-            st.markdown(f"**Molecular Stability:** `94.2%` (No structural degradation observed over 48h)")
-            st.markdown(f"**Potential Toxicity Risk:** `Low` (Off-target binding affinity < 2%)")
+            st.markdown("**Predicted Binding Energy:** `-9.4 kcal/mol` (Highly Stable)")
+            st.markdown("**Molecular Stability:** `94.2%` (No structural degradation observed over 48h)")
+            st.markdown("**Potential Toxicity Risk:** `Low` (Off-target binding affinity < 2%)")
 
 
 def render_pharmacology():

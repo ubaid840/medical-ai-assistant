@@ -64,6 +64,67 @@ def render_hospital_command_center():
                 time.sleep(0.01)
             st.success("Staff Reallocated: 2 Surgical Nurses moved to ER Triage. 1 Pharmacist shifted to Lab Chemistry verification.")
 
+def render_healthcare_directory():
+    st.markdown("### 🏥 Healthcare Directory & Logistics")
+    st.info("Simulated API connections to local hospital networks and pharmacy inventories.")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("#### 👨‍⚕️ Nearby Specialist Finder")
+        specialty = st.selectbox("Select Specialty", ["Cardiologist", "Neurologist", "Pediatrician", "Dermatologist", "Oncologist"])
+        insurance = st.selectbox("Insurance Provider Filter", ["All (Out of Pocket)", "BlueCross BlueShield", "Aetna", "Cigna", "UnitedHealthcare", "Medicare"])
+        zipcode = st.text_input("Enter Zip Code / Pincode", value="10001")
+        
+        if st.button("🔍 Search Specialists"):
+            with st.spinner("Querying local provider networks..."):
+                time.sleep(0.01)
+            st.success(f"Found 3 {specialty}s near {zipcode} accepting {insurance}:")
+            
+            st.markdown(f"""
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <strong style="font-size: 1.1rem; color: #0f172a;">Dr. Sarah Jenkins, MD ({specialty})</strong><br>
+                <span style="color: #64748b; font-size: 0.9rem;">📍 0.8 miles away | ⭐ 4.9/5 (124 reviews)</span><br>
+                <span style="color: #10b981; font-weight: bold; font-size: 0.85rem;">✓ Accepts {insurance}</span><br>
+                <button style="margin-top: 8px; background: #3b82f6; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">📅 Book Earliest: Tomorrow, 10:30 AM</button>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            st.markdown(f"""
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <strong style="font-size: 1.1rem; color: #0f172a;">Dr. Michael Chen, DO ({specialty})</strong><br>
+                <span style="color: #64748b; font-size: 0.9rem;">📍 2.1 miles away | ⭐ 4.7/5 (89 reviews)</span><br>
+                <span style="color: #10b981; font-weight: bold; font-size: 0.85rem;">✓ Accepts {insurance}</span><br>
+                <button style="margin-top: 8px; background: #3b82f6; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">📅 Book Earliest: Thu, 2:15 PM</button>
+            </div>
+            """, unsafe_allow_html=True)
+
+    with col2:
+        st.markdown("#### 💊 Pharmacy Stock Locator")
+        medication = st.text_input("Search Medication (e.g. Amoxicillin, Ozempic)", value="Ozempic 1mg Pen")
+        radius = st.slider("Search Radius (miles)", 1, 25, 5)
+        
+        if st.button("📍 Check Live Inventory"):
+            with st.spinner("Pinging live pharmacy inventory APIs..."):
+                time.sleep(0.01)
+            
+            st.markdown(f"""
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 10px; border-left: 4px solid #ef4444; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <strong style="font-size: 1.1rem; color: #0f172a;">CVS Pharmacy (Main St)</strong><br>
+                <span style="color: #64748b; font-size: 0.9rem;">📍 1.2 miles away</span><br>
+                <span style="color: #ef4444; font-weight: bold; font-size: 0.9rem;">❌ Out of Stock - {medication}</span>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            st.markdown(f"""
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 10px; border-left: 4px solid #10b981; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <strong style="font-size: 1.1rem; color: #0f172a;">Walgreens (Oak Ave)</strong><br>
+                <span style="color: #64748b; font-size: 0.9rem;">📍 3.5 miles away</span><br>
+                <span style="color: #10b981; font-weight: bold; font-size: 0.9rem;">✅ In Stock: 4 units - {medication}</span><br>
+                <button style="margin-top: 8px; background: #10b981; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">🧾 Send Digital Prescription Here</button>
+            </div>
+            """, unsafe_allow_html=True)
+
 def render_hospital():
     render_page_header("🏥", "Enterprise Hospital OS", "Autonomous orchestration of hospital resources, predictive capacity, and workflow.", "linear-gradient(135deg, #10b981, #059669)")
     
@@ -78,6 +139,7 @@ def render_hospital():
         </style>
     """, unsafe_allow_html=True)
     
-    tab1, tab2 = st.tabs(["⚡ Command Center OS", "📊 Department Flow Analytics"])
+    tab1, tab2, tab3 = st.tabs(["⚡ Command Center OS", "📊 Department Flow Analytics", "🏥 Healthcare Directory & Logistics"])
     with tab1: render_hospital_command_center()
     with tab2: st.info("Department Flow historical analytics goes here.")
+    with tab3: render_healthcare_directory()

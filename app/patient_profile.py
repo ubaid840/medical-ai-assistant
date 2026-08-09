@@ -51,7 +51,7 @@ def format_patient_context(patient_id):
     if not patient:
         return ""
     
-    context = f"**Patient Profile Context:**\n"
+    context = "**Patient Profile Context:**\n"
     context += f"- Name: {patient['name']}\n"
     if patient['age']: context += f"- Age: {patient['age']}\n"
     if patient['gender']: context += f"- Gender: {patient['gender']}\n"

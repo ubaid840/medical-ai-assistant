@@ -1,0 +1,86 @@
+import os
+from pathlib import Path
+import sys
+
+# Add app directory to path so we can import vector_store
+sys.path.append(os.path.join(os.path.dirname(__file__), 'app'))
+
+from vector_store import add_document_to_db
+
+doctor_data = """
+# Wikipedia of Doctor Data Zone: Global Medical Specialties Index
+
+This database contains the comprehensive scope of practice, training requirements, and clinical procedures for all major medical specialties.
+
+## 1. Cardiology (Interventional & Clinical)
+* **Scope of Practice:** Diagnosis and treatment of congenital heart defects, coronary artery disease, heart failure, valvular heart disease, and electrophysiology.
+* **Key Procedures:** Cardiac catheterization, angioplasty, stent placement, pacemaker insertion, echocardiography, transesophageal echocardiogram (TEE).
+* **Training:** 3 years Internal Medicine residency + 3 years Cardiology fellowship (+1-2 years for Interventional/Electrophysiology).
+* **Critical Guidelines:** AHA/ACC guidelines for heart failure and acute coronary syndromes.
+
+## 2. Oncology (Medical, Radiation, Surgical)
+* **Scope of Practice:** Diagnosis, staging, and treatment of malignant neoplasms (cancer).
+* **Key Procedures:** Chemotherapy administration, targeted therapy (monoclonal antibodies, tyrosine kinase inhibitors), immunotherapy (CAR-T, checkpoint inhibitors), radiation dosing, tumor resection.
+* **Training:** 3 years Internal Medicine + 3 years Hematology/Oncology fellowship.
+* **Critical Guidelines:** NCCN Clinical Practice Guidelines in Oncology.
+
+## 3. Neurology
+* **Scope of Practice:** Disorders of the central and peripheral nervous system, including the brain, spinal cord, cranial nerves, and peripheral nerves.
+* **Key Procedures:** Lumbar puncture, electromyography (EMG), electroencephalography (EEG), administration of tPA for acute ischemic stroke.
+* **Training:** 1 year Internal Medicine + 3 years Neurology residency.
+* **Critical Conditions:** Alzheimer's disease, Parkinson's disease, Multiple Sclerosis, Epilepsy, ALS.
+
+## 4. Anesthesiology
+* **Scope of Practice:** Perioperative medicine, pain medicine, intensive care medicine, and the administration of anesthesia.
+* **Key Procedures:** Endotracheal intubation, epidural/spinal blocks, central venous catheter placement, arterial line placement.
+* **Training:** 4 years Anesthesiology residency.
+* **Critical Pharmacokinetics:** Propofol, Fentanyl, Rocuronium, Sevoflurane MAC values.
+
+## 5. Emergency Medicine
+* **Scope of Practice:** Acute illnesses and injuries that require immediate medical attention. First-line triage and stabilization.
+* **Key Procedures:** Rapid Sequence Intubation (RSI), chest tube thoracostomy, central line placement, point-of-care ultrasound (POCUS), CPR and advanced cardiac life support (ACLS).
+* **Training:** 3 to 4 years Emergency Medicine residency.
+* **Critical Frameworks:** ATLS (Advanced Trauma Life Support), primary and secondary surveys.
+
+## 6. General Surgery
+* **Scope of Practice:** Surgical treatment of abdominal organs, e.g., intestines, esophagus, stomach, colon, liver, gallbladder, and bile ducts, and often the thyroid gland.
+* **Key Procedures:** Appendectomy, cholecystectomy, hernia repair, bowel resection, laparoscopy.
+* **Training:** 5 years General Surgery residency.
+
+## 7. Psychiatry
+* **Scope of Practice:** Diagnosis, prevention, and treatment of mental disorders related to mood, behavior, cognition, and perceptions.
+* **Key Therapies:** Psychopharmacology (SSRIs, antipsychotics, mood stabilizers), Electroconvulsive therapy (ECT), Transcranial magnetic stimulation (TMS), Cognitive Behavioral Therapy (CBT).
+* **Training:** 4 years Psychiatry residency.
+* **Critical Guidelines:** DSM-5 TR diagnostic criteria.
+
+## 8. Pediatrics
+* **Scope of Practice:** Medical care of infants, children, and adolescents.
+* **Key Procedures:** Neonatal intubation, vaccinations, developmental screening.
+* **Training:** 3 years Pediatrics residency.
+
+## 9. Orthopedic Surgery
+* **Scope of Practice:** Surgery concerned with conditions involving the musculoskeletal system.
+* **Key Procedures:** Joint replacement (arthroplasty), fracture repair (ORIF), arthroscopy, laminectomy.
+* **Training:** 5 years Orthopedic Surgery residency.
+"""
+
+def ingest_data():
+    data_dir = Path(os.path.dirname(__file__)) / 'app' / 'data'
+    data_dir.mkdir(exist_ok=True, parents=True)
+    
+    file_path = data_dir / 'doctor_data_zone_wikipedia.txt'
+    
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(doctor_data)
+        
+    print(f"Generated {file_path}")
+    
+    print("Ingesting into ChromaDB...")
+    try:
+        add_document_to_db(str(file_path))
+        print("Successfully ingested the Wikipedia of Doctor Data Zone into the chatbot's knowledge base!")
+    except Exception as e:
+        print(f"Error during ingestion: {e}")
+
+if __name__ == "__main__":
+    ingest_data()

@@ -1,0 +1,70 @@
+
+# Global Pharmacopeia & Essential Medicines Compendium
+
+This master database contains pharmacological data, mechanisms of action, and clinical indications for the major classes of medical therapeutics used worldwide.
+
+## 1. Antimicrobials & Antibiotics
+* **Beta-Lactams (Penicillins & Cephalosporins):** 
+  * *Mechanism:* Inhibit bacterial cell wall synthesis by binding to penicillin-binding proteins (PBPs).
+  * *Key Drugs:* Amoxicillin, Piperacillin-Tazobactam (Zosyn), Ceftriaxone, Cefepime.
+  * *Indications:* Strep throat, pneumonia, syphilis, severe sepsis.
+* **Macrolides:** 
+  * *Mechanism:* Inhibit bacterial protein synthesis by binding to the 50S ribosomal subunit.
+  * *Key Drugs:* Azithromycin, Clarithromycin.
+* **Fluoroquinolones:** 
+  * *Mechanism:* Inhibit bacterial DNA topoisomerase IV and DNA gyrase.
+  * *Key Drugs:* Ciprofloxacin, Levofloxacin. (Warning: Risk of tendon rupture).
+
+## 2. Cardiovascular & Antihypertensives
+* **ACE Inhibitors:** 
+  * *Mechanism:* Prevent conversion of angiotensin I to angiotensin II, leading to vasodilation.
+  * *Key Drugs:* Lisinopril, Enalapril. (Side effect: dry cough).
+* **Beta-Blockers:** 
+  * *Mechanism:* Block sympathetic stimulation at beta-1 adrenergic receptors in the heart, reducing heart rate and contractility.
+  * *Key Drugs:* Metoprolol, Carvedilol, Propranolol.
+* **Calcium Channel Blockers (CCBs):** 
+  * *Mechanism:* Block calcium influx into smooth muscle cells, causing vasodilation.
+  * *Key Drugs:* Amlodipine (Dihydropyridine), Diltiazem (Non-dihydropyridine).
+
+## 3. Endocrinology & Antidiabetics
+* **Biguanides:** 
+  * *Mechanism:* Decrease hepatic glucose production and increase insulin sensitivity.
+  * *Key Drug:* Metformin. (First-line for Type 2 Diabetes).
+* **GLP-1 Receptor Agonists:** 
+  * *Mechanism:* Stimulate insulin release in a glucose-dependent manner, delay gastric emptying, and suppress appetite.
+  * *Key Drugs:* Semaglutide (Ozempic/Wegovy), Liraglutide, Dulaglutide.
+* **SGLT2 Inhibitors:** 
+  * *Mechanism:* Inhibit glucose reabsorption in the proximal renal tubules, causing glycosuria.
+  * *Key Drugs:* Empagliflozin, Dapagliflozin. (Also used for heart failure).
+
+## 4. Oncology & Antineoplastics
+* **Tyrosine Kinase Inhibitors (TKIs):** 
+  * *Mechanism:* Block specific enzymes (kinases) involved in cancer cell growth.
+  * *Key Drugs:* Imatinib (BCR-ABL in CML), Osimertinib (EGFR in Lung Cancer).
+* **Immune Checkpoint Inhibitors:** 
+  * *Mechanism:* Block PD-1 or CTLA-4 proteins, allowing the patient's T-cells to recognize and attack cancer cells.
+  * *Key Drugs:* Pembrolizumab (Keytruda), Nivolumab (Opdivo), Ipilimumab.
+
+## 5. Neuro-Psychiatry
+* **Selective Serotonin Reuptake Inhibitors (SSRIs):** 
+  * *Mechanism:* Inhibit the reuptake of serotonin in the synaptic cleft, increasing mood and emotional regulation.
+  * *Key Drugs:* Sertraline (Zoloft), Fluoxetine (Prozac), Escitalopram (Lexapro).
+* **Atypical Antipsychotics:** 
+  * *Mechanism:* Antagonize dopamine D2 and serotonin 5-HT2A receptors.
+  * *Key Drugs:* Quetiapine, Olanzapine, Aripiprazole, Risperidone.
+
+## 6. Hematology & Anticoagulants
+* **Direct Oral Anticoagulants (DOACs):** 
+  * *Mechanism:* Directly inhibit specific factors in the coagulation cascade (usually Factor Xa or Thrombin).
+  * *Key Drugs:* Apixaban (Eliquis), Rivaroxaban (Xarelto), Dabigatran.
+* **Vitamin K Antagonists:** 
+  * *Mechanism:* Inhibit vitamin K epoxide reductase, preventing synthesis of factors II, VII, IX, X.
+  * *Key Drug:* Warfarin (Requires regular INR monitoring).
+
+## 7. Analgesics & Anti-Inflammatories
+* **Nonsteroidal Anti-inflammatory Drugs (NSAIDs):** 
+  * *Mechanism:* Reversibly inhibit COX-1 and COX-2 enzymes, decreasing prostaglandin synthesis.
+  * *Key Drugs:* Ibuprofen, Naproxen, Celecoxib (COX-2 selective).
+* **Opioids:** 
+  * *Mechanism:* Agonists at the mu-opioid receptors in the central nervous system.
+  * *Key Drugs:* Morphine, Fentanyl, Oxycodone. (High risk of respiratory depression and addiction).

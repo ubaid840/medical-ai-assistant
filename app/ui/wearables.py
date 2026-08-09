@@ -31,15 +31,16 @@ def render_wearables():
         </div>
     """, unsafe_allow_html=True)
     
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
     
     with col1:
         st.metric(label="Heart Rate", value="72 bpm", delta="-1 bpm")
     with col2:
         st.metric(label="SpO2", value="99%", delta="0%")
     with col3:
-        st.metric(label="Status", value="Normal Sinus Rhythm", delta="Stable")
-        
+        st.metric(label="Blood Glucose (CGM)", value="105 mg/dL", delta="+5 mg/dL", delta_color="inverse")
+    with col4:
+        st.metric(label="Sleep Score", value="84/100", delta="+2 pts")
     st.markdown(
         """
         <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; margin-top: 25px;">
